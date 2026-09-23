@@ -30,6 +30,10 @@ jobs:
       # devops.ma est configure dans les reglages Pages — sans toucher au code.
       - id: pages
         uses: actions/configure-pages@v5
+        with:
+          # Cree le site Pages si le depot n'en a pas encore (sinon l'action
+          # echoue en 404). Sans effet une fois le site existant.
+          enablement: true
 
       - uses: actions/setup-node@v6
         with:
