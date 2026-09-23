@@ -32,12 +32,22 @@ const { article, plusAncien, plusRecent } = Astro.props;
 const { Content } = await render(article);
 const pilier = pilierDe(article);
 const minutes = minutesDeLecture(article);
+
+// Reprend exactement le fil affiche plus bas : Accueil > Rubrique > Article.
+const filAriane = [
+  { nom: 'Accueil', chemin: '/' },
+  { nom: pilier.nom, chemin: `/${pilier.slug}` },
+  { nom: article.data.titre, chemin: `/articles/${article.id}` },
+];
 ---
 <Base
   titre={article.data.titre}
   description={article.data.resume}
   type="article"
   publieLe={article.data.date}
+  majLe={article.data.maj}
+  motsCles={article.data.tags}
+  filAriane={filAriane}
   noindex={article.data.brouillon}
 >
   <!-- data-pagefind-body : seules les pages d'article entrent dans l'index.

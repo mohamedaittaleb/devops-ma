@@ -1,13 +1,13 @@
 export const SITE = {
   title: 'devops.ma',
-  auteur: 'Mohamed',
+  auteur: 'Mohamed Ait Taleb',
   baseline: 'Carnet technique : DevOps, DevSecOps et automatisation par l’IA.',
   description:
     'Articles techniques en français sur le DevOps, le DevSecOps et l’AI-DevOps. Labos reproductibles, retours d’expérience et mesures réelles.',
   url: 'https://devops.ma',
   langue: 'fr',
   linkedin: 'https://www.linkedin.com/in/mohamed-ait-taleb-a121b288/',
-  github: 'https://github.com/…',
+  github: 'https://github.com/mohamedaittaleb',
   email: 'contact@devops.ma',
 } as const;
 

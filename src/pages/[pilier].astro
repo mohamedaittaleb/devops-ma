@@ -14,8 +14,13 @@ export const getStaticPaths: GetStaticPaths = async () =>
 interface Props { pilier: (typeof PILIERS_LISTE)[number] }
 const { pilier } = Astro.props;
 const articles = await articlesDuPilier(pilier.slug);
+
+const filAriane = [
+  { nom: 'Accueil', chemin: '/' },
+  { nom: pilier.nom, chemin: `/${pilier.slug}` },
+];
 ---
-<Base titre={pilier.titre} description={pilier.description}>
+<Base titre={pilier.titre} description={pilier.description} filAriane={filAriane}>
   <div data-pilier={pilier.slug}>
     <section class="trame">
       <div class="enveloppe tete">

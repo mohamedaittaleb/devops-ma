@@ -11,6 +11,9 @@ interface Props {
   type?: 'website' | 'article';
   canonique?: string;
   publieLe?: Date;
+  majLe?: Date;
+  motsCles?: readonly string[];
+  filAriane?: { nom: string; chemin: string }[];
   noindex?: boolean;
 }
 
@@ -20,22 +23,105 @@ const {
   type = 'website',
   canonique = new URL(Astro.url.pathname, Astro.site).href,
   publieLe,
+  majLe,
+  motsCles,
+  filAriane,
   noindex = false,
 } = Astro.props;
 
 const titreComplet = titre === SITE.title ? titre : `${titre} — ${SITE.title}`;
 const ogImage = lienAbsolu('/og.png', Astro.site);
 
+/**
+ * Les trois entites du site portent un @id stable et ne sont decrites qu'une
+ * fois ; partout ailleurs on s'y refere par cet identifiant. Sans cela chaque
+ * page repete la fiche auteur en entier, et un moteur n'a aucun moyen de
+ * savoir que ces copies designent une seule et meme personne.
+ */
+const ID_SITE = `${SITE.url}/#site`;
+const ID_AUTEUR = `${SITE.url}/#auteur`;
+
+// `sameAs` relie la personne a ses profils publics : c'est ce rattachement qui
+// fait passer l'auteur du statut de chaine de caracteres a celui d'entite
+// identifiable, le seul qui compte pour l'autorite d'un blog technique.
+const auteur = {
+  '@type': 'Person',
+  '@id': ID_AUTEUR,
+  name: SITE.auteur,
+  url: `${SITE.url}/`,
+  sameAs: [SITE.linkedin, SITE.github],
+};
+
+const siteWeb = {
+  '@type': 'WebSite',
+  '@id': ID_SITE,
+  name: SITE.title,
+  url: `${SITE.url}/`,
+  description: SITE.description,
+  inLanguage: SITE.langue,
+  publisher: { '@id': ID_AUTEUR },
+};
+
+const page = type === 'article'
+  ? {
+      '@type': 'BlogPosting',
+      '@id': canonique,
+      headline: titre,
+      description,
+      url: canonique,
+      mainEntityOfPage: { '@id': canonique },
+      isPartOf: { '@id': ID_SITE },
+      image: ogImage,
+      inLanguage: SITE.langue,
+      author: { '@id': ID_AUTEUR },
+      publisher: { '@id': ID_AUTEUR },
+      ...(publieLe ? { datePublished: publieLe.toISOString() } : {}),
+      // Sans dateModified, une revision reste invisible : l'article continue
+      // d'etre date de sa publication. A defaut de `maj`, la date de parution
+      // fait foi -- la repeter vaut mieux qu'omettre le champ.
+      ...(majLe ?? publieLe ? { dateModified: (majLe ?? publieLe)!.toISOString() } : {}),
+      ...(motsCles?.length ? { keywords: motsCles.join(', ') } : {}),
+    }
+  : {
+      '@type': 'WebPage',
+      '@id': canonique,
+      name: titreComplet,
+      description,
+      url: canonique,
+      isPartOf: { '@id': ID_SITE },
+      inLanguage: SITE.langue,
+    };
+
+/**
+ * Le fil d'Ariane est deja affiche en haut des articles ; le declarer ici le
+ * rend exploitable par un moteur, qui l'affiche alors sous le titre du resultat
+ * a la place de l'URL brute.
+ *
+ * La barre finale est ajoutee pour coller a <link rel="canonical"> : sans elle,
+ * l'etape designerait une adresse qui redirige vers la page canonique au lieu
+ * de la designer directement.
+ */
+const canoniqueDe = (chemin: string) => {
+  const url = lienAbsolu(chemin, Astro.site);
+  return url.endsWith('/') ? url : `${url}/`;
+};
+
+const fil = filAriane?.length
+  ? [{
+      '@type': 'BreadcrumbList',
+      '@id': `${canonique}#fil`,
+      itemListElement: filAriane.map((etape, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: etape.nom,
+        item: canoniqueDe(etape.chemin),
+      })),
+    }]
+  : [];
+
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': type === 'article' ? 'BlogPosting' : 'WebSite',
-  name: titreComplet,
-  headline: titre,
-  description,
-  url: canonique,
-  inLanguage: 'fr',
-  author: { '@type': 'Person', name: SITE.auteur, url: SITE.url },
-  ...(publieLe ? { datePublished: publieLe.toISOString() } : {}),
+  '@graph': [auteur, siteWeb, page, ...fil],
 };
 ---
 <!doctype html>
