@@ -4,38 +4,133 @@ import { SITE } from '../consts';
 ---
 <aside class="sponsor" aria-label="Emplacement sponsor">
   {SPONSOR.actif ? (
-    <a href={SPONSOR.url} rel="sponsored noopener" class="sponsor-lien">
-      {SPONSOR.logo && <img src={SPONSOR.logo} alt="" width="28" height="28" loading="lazy" />}
-      <span>
+    <a href={SPONSOR.url} rel="sponsored noopener" class="carte">
+      <p class="bandeau">
+        <span class="point" aria-hidden="true"></span>
+        <span class="etiquette">Sponsor</span>
+      </p>
+
+      <p class="slogan">{SPONSOR.accroche}</p>
+
+      <p class="invite">
+        {SPONSOR.logo && <img src={SPONSOR.logo} alt="" width="26" height="26" loading="lazy" />}
         <strong>{SPONSOR.nom}</strong>
-        <span class="sponsor-accroche">{SPONSOR.accroche}</span>
-      </span>
-      <span class="etiquette">Sponsor</span>
+        <span class="appel">Visiter le site <span aria-hidden="true">&#8599;</span></span>
+      </p>
     </a>
   ) : (
-    <a href={`mailto:${SITE.email}?subject=Sponsoring%20devops.ma`} class="sponsor-lien sponsor-vide">
-      <span>Cet emplacement est disponible — un sponsor à la fois, sans script tiers.</span>
-      <span class="etiquette">Nous écrire</span>
+    <a href={`mailto:${SITE.email}?subject=Sponsoring%20devops.ma`} class="carte vide">
+      <p class="bandeau">
+        <span class="point" aria-hidden="true"></span>
+        <span class="etiquette">Emplacement libre</span>
+      </p>
+
+      <p class="slogan">Un sponsor à la fois, sans script tiers ni cookie.</p>
+
+      <p class="invite">
+        <strong>{SITE.title}</strong>
+        <span class="appel">Nous écrire <span aria-hidden="true">&#8599;</span></span>
+      </p>
     </a>
   )}
 </aside>
 
 <style>
-  /* Hauteur reservee en permanence : activer un sponsor ne decale rien. */
-  .sponsor { min-height: 68px; display: flex; align-items: center; margin-block: 2rem; }
-  .sponsor-lien {
-    display: flex; align-items: center; gap: 12px; width: 100%;
-    padding: 12px 14px;
-    border: 1px dashed var(--trait); border-radius: 8px;
-    background: var(--fond-2);
-    text-decoration: none; font-size: 14px; color: var(--texte-doux);
+  /* Hauteur reservee en permanence, et surtout identique dans les deux etats :
+     les deux cartes ont la meme structure a trois lignes, donc activer ou
+     retirer un sponsor ne decale jamais ce qui suit. */
+  .sponsor { min-height: 128px; display: flex; margin-block: 2.4rem; }
+
+  .carte {
+    position: relative;
+    display: flex; flex-direction: column; gap: 8px;
+    width: 100%; padding: 14px 16px 15px 19px;
+    border: 1px solid color-mix(in srgb, var(--sponsor) 38%, var(--trait));
+    border-radius: 10px;
+    /* Fond teinte plutot que plat : l'encart se detache du texte de l'article
+       sans avoir besoin d'une image ni d'une bordure epaisse. */
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--sponsor) 9%, var(--fond)),
+        color-mix(in srgb, var(--sponsor) 4%, var(--fond))
+      );
+    text-decoration: none;
+    transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
   }
-  .sponsor-lien:hover { border-color: var(--accent); }
-  .sponsor-lien > span:first-of-type { flex: 1; display: flex; flex-direction: column; }
-  .sponsor-lien strong { color: var(--texte); font-weight: 640; }
-  .sponsor-accroche { font-size: 13px; }
-  .sponsor-vide { font-style: italic; }
+
+  /* Filet vertical : le seul aplat franc de couleur, pose sur le bord. */
+  .carte::before {
+    content: '';
+    position: absolute; inset: 0 auto 0 0; width: 3px;
+    border-radius: 10px 0 0 10px;
+    background: var(--sponsor);
+  }
+
+  .carte:hover {
+    border-color: var(--sponsor);
+    box-shadow: var(--ombre-levee);
+    transform: translateY(-1px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .carte { transition: none; }
+    .carte:hover { transform: none; }
+  }
+
+  .bandeau { display: flex; align-items: center; gap: 7px; margin: 0; }
+  .bandeau .etiquette { color: var(--sponsor); }
+  .point {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--sponsor);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--sponsor) 22%, transparent);
+  }
+
+  /* Le slogan passe avant le nom : c'est lui qu'on lit, la marque vient apres. */
+  .slogan {
+    margin: 0;
+    font-family: var(--police-lecture);
+    font-size: 1.12rem; line-height: 1.45; font-weight: 500;
+    color: var(--texte);
+    text-wrap: balance;
+  }
+
+  .invite {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+    margin: 2px 0 0; font-size: 14px; color: var(--texte-doux);
+  }
+  .invite img { border-radius: 5px; }
+  .invite strong { color: var(--texte); font-weight: 640; }
+
+  /* L'invitation est un bouton a part entiere : sans lui, la carte se lit
+     comme une citation et personne ne clique. */
+  .appel {
+    margin-left: auto;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 12.5px; font-weight: 500;
+    color: color-mix(in srgb, var(--sponsor) 88%, var(--texte));
+    border: 1px solid color-mix(in srgb, var(--sponsor) 45%, var(--trait));
+    border-radius: 999px; padding: 5px 12px;
+    background: var(--fond);
+    transition: background var(--transition), border-color var(--transition);
+  }
+  .carte:hover .appel {
+    background: var(--sponsor);
+    border-color: var(--sponsor);
+    color: var(--fond);
+  }
+
+  /* L'emplacement libre garde la meme carte, en retrait : bordure pointillee
+     et couleur neutre, pour ne pas annoncer un sponsor qui n'existe pas. */
+  .vide { border-style: dashed; background: var(--fond-2); }
+  .vide::before { background: var(--trait-fort); }
+  .vide .bandeau .etiquette, .vide .point { color: var(--texte-tres-doux); }
+  .vide .point { background: var(--texte-tres-doux); box-shadow: none; }
+  .vide .slogan { font-size: 1rem; color: var(--texte-doux); font-style: italic; }
+  .vide .appel { color: var(--texte-doux); border-color: var(--trait-fort); }
+  .vide:hover { border-color: var(--trait-fort); box-shadow: var(--ombre); }
+  .vide:hover .appel { background: var(--fond-3); border-color: var(--trait-fort); color: var(--texte); }
+
   @media (max-width: 520px) {
-    .sponsor-lien { flex-wrap: wrap; }
+    .slogan { font-size: 1.05rem; }
+    .appel { margin-left: 0; }
   }
 </style>
