@@ -1,0 +1,48 @@
+name: ci
+
+# Uniquement sur les pull requests : les poussees sur main sont deja
+# construites et verifiees par le workflow « pages » avant deploiement.
+on:
+  pull_request:
+
+# Une nouvelle poussee sur la PR annule le run precedent.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - run: npm ci --prefer-offline --no-audit --no-fund
+
+      # Types Astro + schema des collections : un article dont le frontmatter
+      # est invalide echoue ici, pas apres le deploiement.
+      - name: Verifier les types et le contenu
+        run: npm run check
+
+      # Construit le site et l'index Pagefind.
+      - name: Construire
+        run: npm run build
+
+      # Meme controle qu'avant deploiement : une PR qui casse un lien
+      # interne echoue ici, pas en production.
+      - name: Verifier les liens internes
+        run: node scripts/verifier-liens.mjs
+
+      - name: Publier l'artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist/
+          retention-days: 7

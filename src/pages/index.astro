@@ -1,0 +1,140 @@
+---
+import Base from '../layouts/Base.astro';
+import ListeArticles from '../components/ListeArticles.astro';
+import Sponsor from '../components/Sponsor.astro';
+import { SITE, PILIERS_LISTE } from '../consts';
+import { tousLesArticles, articlesDuPilier } from '../lib/articles';
+import { lien } from '../lib/lien';
+
+const articles = await tousLesArticles();
+const recents = articles.slice(0, 8);
+
+const comptes = Object.fromEntries(
+  await Promise.all(PILIERS_LISTE.map(async (p) => [p.slug, (await articlesDuPilier(p.slug)).length])),
+);
+---
+<Base titre={SITE.title} description={SITE.description}>
+  <section class="trame">
+    <div class="enveloppe intro">
+      <p class="etiquette kicker">
+        <span class="pastille" aria-hidden="true"></span>Carnet technique · {SITE.langue.toUpperCase()}
+      </p>
+      <h1>{SITE.baseline}</h1>
+      <p class="chapeau">
+        Des labos reproductibles plutôt que des tours d’horizon. Chaque article part d’un
+        problème rencontré en production, montre la configuration exacte, et donne les
+        chiffres avant/après.
+      </p>
+
+      <dl class="chiffres">
+        <div><dt>Articles</dt><dd>{articles.length}</dd></div>
+        <div><dt>Rubriques</dt><dd>{PILIERS_LISTE.length}</dd></div>
+        <div><dt>Traceurs</dt><dd>0</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="enveloppe"><Sponsor /></div>
+
+  <section class="enveloppe">
+    <h2 class="titre-section"><span class="etiquette">Derniers articles</span></h2>
+    <ListeArticles articles={recents} />
+    {articles.length > recents.length && (
+      <p class="tous"><a href={lien("/archives")}>Tous les articles ({articles.length}) →</a></p>
+    )}
+  </section>
+
+  <section class="enveloppe">
+    <h2 class="titre-section"><span class="etiquette">Les trois rubriques</span></h2>
+    <ul class="piliers">
+      {PILIERS_LISTE.map((p) => (
+        <li class="pilier apparait" data-pilier={p.slug}>
+          <a href={lien(`/${p.slug}`)}>
+            <span class="pilier-tete">
+              <span class="point" aria-hidden="true"></span>
+              <span class="pilier-nom">{p.nom}</span>
+              <span class="pilier-compte">{comptes[p.slug]}</span>
+            </span>
+            <span class="pilier-desc">{p.description}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .intro { padding-block: 3.6rem 2.4rem; }
+
+  .kicker { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 1.1rem; }
+  .pastille {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+
+  .intro h1 {
+    font-size: clamp(1.7rem, 5vw, 2.35rem);
+    line-height: 1.18; font-weight: 640; letter-spacing: -.035em;
+    margin: 0 0 1rem; max-width: 20ch;
+    text-wrap: balance;
+  }
+  .chapeau {
+    margin: 0; color: var(--texte-doux); max-width: 58ch;
+    font-family: var(--police-lecture); font-size: 1.06rem; line-height: 1.68;
+  }
+
+  .chiffres {
+    display: flex; flex-wrap: wrap; gap: 0; margin: 2.2rem 0 0;
+    border: 1px solid var(--trait); border-radius: 10px; overflow: hidden;
+    background: color-mix(in srgb, var(--fond-2) 55%, transparent);
+    max-width: 30rem;
+  }
+  .chiffres > div { flex: 1 1 33%; padding: .8rem 1rem; border-right: 1px solid var(--trait); }
+  .chiffres > div:last-child { border-right: 0; }
+  .chiffres dt {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--texte-tres-doux);
+  }
+  .chiffres dd {
+    margin: .15rem 0 0; font-size: 1.5rem; font-weight: 600;
+    letter-spacing: -.03em; font-variant-numeric: tabular-nums;
+  }
+
+  .titre-section {
+    margin: 3rem 0 .2rem;
+    padding-bottom: .55rem;
+    border-bottom: 1px solid var(--trait);
+    font-size: inherit; font-weight: inherit;
+  }
+  .tous { margin-top: 1.5rem; font-size: .93rem; font-family: var(--mono); }
+  .tous a { color: var(--accent); text-decoration: none; }
+  .tous a:hover { text-decoration: underline; }
+
+  .piliers { list-style: none; margin: 1.4rem 0 0; padding: 0; display: grid; gap: 10px; }
+  .pilier a {
+    display: block;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--trait);
+    border-radius: 11px;
+    text-decoration: none;
+    background: var(--fond);
+    transition: border-color var(--transition), background var(--transition), transform var(--transition);
+  }
+  .pilier a:hover {
+    border-color: color-mix(in srgb, var(--accent) 55%, var(--trait));
+    background: var(--fond-2);
+    transform: translateY(-2px);
+  }
+  .pilier-tete { display: flex; align-items: center; gap: 9px; }
+  .point { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .pilier-nom { font-family: var(--mono); font-weight: 600; font-size: .96rem; letter-spacing: -.01em; }
+  .pilier-compte {
+    margin-left: auto;
+    font-family: var(--mono); font-size: 11px; color: var(--texte-tres-doux);
+    border: 1px solid var(--trait); border-radius: 999px; padding: 1px 8px;
+  }
+  .pilier-desc {
+    display: block; margin-top: .35rem;
+    color: var(--texte-doux); font-size: .92rem; line-height: 1.55;
+  }
+</style>

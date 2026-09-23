@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+import EnteteDePage from '../components/EnteteDePage.astro';
+import ListeArticles from '../components/ListeArticles.astro';
+import { tousLesArticles, tousLesTags, lienTag } from '../lib/articles';
+
+const articles = await tousLesArticles();
+const tags = await tousLesTags();
+const pluriel = articles.length > 1 ? 's' : '';
+---
+<Base
+  titre="Archives"
+  description="Tous les articles publiés sur devops.ma, du plus récent au plus ancien."
+>
+  <EnteteDePage
+    kicker="Index"
+    titre="Archives"
+    chapeau="Tout ce qui a été publié, du plus récent au plus ancien."
+    note={`${articles.length} article${pluriel} · ${tags.length} tags`}
+  >
+    {tags.length > 0 && (
+      <ul class="tags">
+        {tags.map(({ tag, total }) => (
+          <li><a href={lienTag(tag)}>{tag}<span>{total}</span></a></li>
+        ))}
+      </ul>
+    )}
+  </EnteteDePage>
+
+  <div class="enveloppe"><ListeArticles articles={articles} /></div>
+</Base>
+
+<style>
+  .tags { list-style: none; display: flex; flex-wrap: wrap; gap: 7px; margin: 1.5rem 0 0; padding: 0; }
+  .tags a {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--mono); font-size: 12px; text-decoration: none;
+    border: 1px solid var(--trait); border-radius: 999px; padding: 3px 11px;
+    transition: border-color var(--transition), color var(--transition), background var(--transition);
+  }
+  .tags a:hover { border-color: var(--accent); color: var(--accent); background: var(--fond-2); }
+  .tags span { color: var(--texte-tres-doux); font-size: 11px; }
+</style>

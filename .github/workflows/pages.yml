@@ -1,0 +1,69 @@
+name: pages
+
+on:
+  push:
+    branches: [main]
+  # Permet de redeployer sans nouveau commit (bouton « Run workflow »).
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  # Indispensable : deploy-pages s'authentifie par OIDC, pas par un secret.
+  id-token: write
+
+# Un seul deploiement a la fois. cancel-in-progress reste a false :
+# interrompre une publication en cours laisse Pages dans un etat incertain.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  construire:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # Renvoie l'origine et le chemin de base reels du site Pages.
+      # C'est ce qui rend le build portable : page de projet aujourd'hui
+      # (https://<compte>.github.io/devops-ma), domaine propre le jour ou
+      # devops.ma est configure dans les reglages Pages — sans toucher au code.
+      - id: pages
+        uses: actions/configure-pages@v5
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - run: npm ci --prefer-offline --no-audit --no-fund
+
+      # Types Astro + schema des collections : un article dont le frontmatter
+      # est invalide echoue ici, avant d'etre publie.
+      - name: Verifier les types et le contenu
+        run: npm run check
+
+      # Construit le site et l'index Pagefind.
+      - name: Construire
+        run: npm run build
+        env:
+          SITE_URL: ${{ steps.pages.outputs.origin }}
+          SITE_BASE: ${{ steps.pages.outputs.base_path }}
+
+      # Refuse de publier un site dont les liens internes ne resolvent pas.
+      - name: Verifier les liens internes
+        run: node scripts/verifier-liens.mjs
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deployer:
+    needs: construire
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - id: deploiement
+        uses: actions/deploy-pages@v4

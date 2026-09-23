@@ -1,0 +1,85 @@
+---
+import Base from '../layouts/Base.astro';
+import EnteteDePage from '../components/EnteteDePage.astro';
+import { lien } from '../lib/lien';
+import { SITE, PILIERS_LISTE } from '../consts';
+---
+<Base
+  titre="À propos"
+  description="Qui écrit devops.ma, comment les articles sont produits, et ce que le site ne fait pas."
+>
+  <EnteteDePage kicker="Le site" titre="À propos" chapeau={SITE.baseline} />
+
+  <article class="enveloppe">
+    <div class="prose">
+      <h2>Ce que vous trouverez ici</h2>
+      <p>
+        Un carnet technique tenu par {SITE.auteur}, en français. Trois rubriques, pas
+        davantage :
+      </p>
+      <ul>
+        {PILIERS_LISTE.map((p) => (
+          <li><a href={lien(`/${p.slug}`)}><strong>{p.nom}</strong></a> — {p.description}</li>
+        ))}
+      </ul>
+
+      <h2>Comment un article est écrit</h2>
+      <p>
+        Chaque article part d’un problème réel, pas d’un mot-clé. La règle que je m’impose
+        tient en trois points :
+      </p>
+      <ul>
+        <li>
+          <strong>La configuration exacte est publiée.</strong> Versions, fichiers,
+          commandes. Un article technique dont le code n’est pas publiable n’est qu’une
+          opinion — et il est alors annoncé comme tel.
+        </li>
+        <li>
+          <strong>Les chiffres sont mesurés, pas estimés.</strong> Durées de pipeline,
+          taille d’image, coût mensuel : ce qui est annoncé a été relevé sur une machine
+          qui existe, et la méthode de mesure est donnée.
+        </li>
+        <li>
+          <strong>Ce qui n’a pas marché reste dans l’article.</strong> Les impasses
+          coûtent plus cher à redécouvrir qu’à lire.
+        </li>
+      </ul>
+      <p>
+        Les articles corrigés portent une date de mise à jour. Si vous trouvez une erreur,
+        <a href={`mailto:${SITE.email}`}>écrivez-moi</a> : la correction est intégrée et créditée.
+      </p>
+
+      <h2>Ce que ce site ne fait pas</h2>
+      <p>
+        Pas de régie publicitaire, pas de traceur, pas de bandeau de consentement — il n’y
+        a rien à consentir. Les pages sont générées à la compilation et servies en statique.
+        La mesure d’audience, quand elle est active, est auto-hébergée et sans cookie.
+      </p>
+      <p>
+        Le site accueille <strong>un seul sponsor à la fois</strong> : une image et une ligne
+        de texte, servies depuis ce domaine, sans JavaScript tiers. L’emplacement est réservé
+        en permanence dans la mise en page, pour qu’activer un sponsor ne décale jamais le
+        contenu sous vos yeux. Si cela vous intéresse,
+        <a href={`mailto:${SITE.email}?subject=Sponsoring%20devops.ma`}>proposez-le</a>.
+      </p>
+
+      <h2>Licences</h2>
+      <p>
+        Les articles sont publiés sous <a href="https://creativecommons.org/licenses/by/4.0/deed.fr" rel="noopener">CC BY 4.0</a> :
+        reprenez-les, traduisez-les, citez la source. Le code des dépôts liés est sous licence MIT.
+      </p>
+
+      <h2>Me joindre</h2>
+      <ul>
+        <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
+        <li><a href={SITE.linkedin} rel="me noopener">LinkedIn</a></li>
+        <li><a href={SITE.github} rel="me noopener">GitHub</a></li>
+        <li><a href={lien("/rss.xml")}>Flux RSS</a></li>
+      </ul>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .prose { padding-top: 1rem; }
+</style>

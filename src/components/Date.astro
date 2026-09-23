@@ -1,0 +1,8 @@
+---
+interface Props { date: Date; classe?: string }
+const { date, classe = '' } = Astro.props;
+const lisible = new Intl.DateTimeFormat('fr-MA', {
+  year: 'numeric', month: 'long', day: 'numeric',
+}).format(date);
+---
+<time datetime={date.toISOString()} class={classe}>{lisible}</time>

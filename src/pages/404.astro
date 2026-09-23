@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+import EnteteDePage from '../components/EnteteDePage.astro';
+import { PILIERS_LISTE } from '../consts';
+import { lien } from '../lib/lien';
+---
+<Base titre="Page introuvable" noindex={true}>
+  <EnteteDePage
+    kicker="Erreur 404"
+    titre="Cette page n’existe pas."
+    chapeau="Le lien est peut-être périmé : une URL d’article n’est jamais modifiée après publication, mais le reste du site bouge encore."
+  />
+
+  <div class="enveloppe">
+    <ul class="pistes">
+      <li><a href={lien("/")}>Accueil</a></li>
+      <li><a href={lien("/archives")}>Tous les articles</a></li>
+      {PILIERS_LISTE.map((p) => (
+        <li data-pilier={p.slug}>
+          <a href={lien(`/${p.slug}`)}><span class="point" aria-hidden="true"></span>{p.nom}</a>
+        </li>
+      ))}
+      <li><a href={lien("/recherche")}>Recherche</a></li>
+    </ul>
+  </div>
+</Base>
+
+<style>
+  .pistes { list-style: none; padding: 0; margin: 1.5rem 0 3rem; display: flex; flex-wrap: wrap; gap: 8px; }
+  .pistes a {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 13px; text-decoration: none;
+    border: 1px solid var(--trait); border-radius: 8px; padding: 6px 12px;
+    transition: border-color var(--transition), color var(--transition), background var(--transition);
+  }
+  .pistes a:hover { border-color: var(--accent); color: var(--accent); background: var(--fond-2); }
+  .point { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+</style>

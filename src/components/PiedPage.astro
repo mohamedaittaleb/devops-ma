@@ -1,0 +1,52 @@
+---
+import { SITE, PILIERS_LISTE } from '../consts';
+import { lien } from '../lib/lien';
+const annee = new Date().getFullYear();
+---
+<footer class="pied">
+  <div class="enveloppe pied-inner">
+    <div class="pied-col">
+      <p class="pied-titre">{SITE.title}</p>
+      <p class="pied-note">{SITE.baseline}</p>
+      <p class="pied-note">
+        Site statique, sans traceur ni cookie publicitaire.{' '}
+        <a href={SITE.github} rel="noopener">Le code et l’infrastructure sont publics</a>.
+      </p>
+    </div>
+    <div class="pied-col">
+      <p class="etiquette">Rubriques</p>
+      <ul>{PILIERS_LISTE.map((p) => <li><a href={lien(`/${p.slug}`)}>{p.nom}</a></li>)}</ul>
+    </div>
+    <div class="pied-col">
+      <p class="etiquette">Suivre</p>
+      <ul>
+        <li><a href={lien("/rss.xml")}>Flux RSS</a></li>
+        <li><a href={SITE.linkedin} rel="me noopener">LinkedIn</a></li>
+        <li><a href={SITE.github} rel="me noopener">GitHub</a></li>
+        <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="enveloppe pied-bas">
+    <span>© {annee} {SITE.auteur}</span>
+    <span>Articles sous licence CC BY 4.0 · code sous licence MIT</span>
+  </div>
+</footer>
+
+<style>
+  .pied { border-top: 1px solid var(--trait); margin-top: 5rem; padding-top: 2.5rem; padding-bottom: 2rem; }
+  .pied-inner { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 32px; }
+  .pied-col ul { list-style: none; margin: .4rem 0 0; padding: 0; }
+  .pied-col li { margin-bottom: .25rem; }
+  .pied-col a, .pied-note { font-size: 14px; color: var(--texte-doux); }
+  .pied-col a:hover { color: var(--texte); }
+  .pied-titre { font-family: var(--mono); font-weight: 650; margin: 0 0 .4rem; font-size: 15px; }
+  .pied-note { margin: 0 0 .5rem; }
+  .pied-bas {
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    margin-top: 2.5rem; padding-top: 1.2rem;
+    border-top: 1px solid var(--trait);
+    font-size: 13px; color: var(--texte-doux);
+  }
+  @media (max-width: 640px) { .pied-inner { grid-template-columns: 1fr; gap: 24px; } }
+</style>

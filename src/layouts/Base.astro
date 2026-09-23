@@ -1,0 +1,118 @@
+---
+import '../styles/global.css';
+import Entete from '../components/Entete.astro';
+import PiedPage from '../components/PiedPage.astro';
+import { SITE } from '../consts';
+import { lien, lienAbsolu } from '../lib/lien';
+
+interface Props {
+  titre: string;
+  description?: string;
+  type?: 'website' | 'article';
+  canonique?: string;
+  publieLe?: Date;
+  noindex?: boolean;
+}
+
+const {
+  titre,
+  description = SITE.description,
+  type = 'website',
+  canonique = new URL(Astro.url.pathname, Astro.site).href,
+  publieLe,
+  noindex = false,
+} = Astro.props;
+
+const titreComplet = titre === SITE.title ? titre : `${titre} — ${SITE.title}`;
+const ogImage = lienAbsolu('/og.png', Astro.site);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': type === 'article' ? 'BlogPosting' : 'WebSite',
+  name: titreComplet,
+  headline: titre,
+  description,
+  url: canonique,
+  inLanguage: 'fr',
+  author: { '@type': 'Person', name: SITE.auteur, url: SITE.url },
+  ...(publieLe ? { datePublished: publieLe.toISOString() } : {}),
+};
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titreComplet}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonique} />
+    {noindex && <meta name="robots" content="noindex" />}
+
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={titre} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonique} />
+    <meta property="og:site_name" content={SITE.title} />
+    <meta property="og:locale" content="fr_MA" />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href={lien("/favicon.svg")} type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.title} href={lien("/rss.xml")} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#0e0e10" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fdfdfc" media="(prefers-color-scheme: light)" />
+
+    <!-- Applique le theme memorise avant le premier rendu, pour eviter le flash. -->
+    <script is:inline>
+      try {
+        const t = localStorage.getItem('theme');
+        if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+      } catch {}
+    </script>
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body>
+    <a href="#contenu" class="saut">Aller au contenu</a>
+    <Entete />
+    <main id="contenu"><slot /></main>
+    <PiedPage />
+
+    <!-- Un seul ecouteur delegue pour tous les blocs de code de la page :
+         rien a rebrancher quand le contenu change, et aucun cout par bloc. -->
+    <script is:inline>
+      document.addEventListener('click', async (evenement) => {
+        const bouton = evenement.target.closest('[data-copier]');
+        if (!bouton) return;
+        const pre = bouton.closest('.bloc-code')?.querySelector('pre');
+        if (!pre) return;
+
+        const libelle = (texte, etat) => {
+          bouton.textContent = texte;
+          if (etat) bouton.dataset.etat = etat;
+          else delete bouton.dataset.etat;
+        };
+
+        try {
+          // innerText, pas textContent : il respecte les sauts de ligne rendus.
+          await navigator.clipboard.writeText(pre.innerText.trimEnd());
+          libelle('copié', 'copie');
+        } catch {
+          // Presse-papiers refuse (contexte non securise, permission) : le dire
+          // plutot que d'afficher un succes qui n'a pas eu lieu.
+          libelle('échec');
+        }
+        setTimeout(() => libelle('copier'), 1600);
+      });
+    </script>
+
+    <style is:global>
+      .saut {
+        position: absolute; left: -9999px;
+        background: var(--accent); color: #fff; padding: 10px 16px; border-radius: 0 0 6px 0;
+      }
+      .saut:focus { left: 0; top: 0; z-index: 50; }
+    </style>
+  </body>
+</html>

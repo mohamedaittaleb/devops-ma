@@ -1,0 +1,47 @@
+---
+/**
+ * En-tete des pages de liste et des pages fixes. Les articles et les rubriques
+ * ont le leur, plus charge ; tout le reste passe par ici pour que la trame,
+ * la pastille et les graisses restent identiques d'une page a l'autre.
+ */
+interface Props {
+  kicker: string;
+  titre: string;
+  chapeau?: string;
+  note?: string;
+  mono?: boolean;
+}
+const { kicker, titre, chapeau, note, mono = false } = Astro.props;
+---
+<section class="trame">
+  <div class="enveloppe tete">
+    <p class="etiquette kicker"><span class="pastille" aria-hidden="true"></span>{kicker}</p>
+    <h1 class:list={['titre', { mono }]}>{titre}</h1>
+    {chapeau && <p class="chapeau">{chapeau}</p>}
+    {note && <p class="note">{note}</p>}
+    <slot />
+  </div>
+</section>
+
+<style>
+  .tete { padding-block: 3.2rem 1.2rem; }
+  .kicker { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 .9rem; color: var(--accent); }
+  .pastille {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+  .titre {
+    font-size: clamp(1.65rem, 5vw, 2.1rem); font-weight: 640;
+    letter-spacing: -.035em; margin: 0 0 .6rem; text-wrap: balance;
+  }
+  .titre.mono { font-family: var(--mono); font-size: clamp(1.4rem, 4vw, 1.8rem); letter-spacing: -.02em; }
+  .chapeau {
+    margin: 0; color: var(--texte-doux); max-width: 58ch;
+    font-family: var(--police-lecture); font-size: 1.04rem; line-height: 1.68;
+  }
+  .note {
+    margin: 1rem 0 0;
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--texte-tres-doux);
+  }
+</style>

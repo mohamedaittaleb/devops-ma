@@ -1,0 +1,152 @@
+---
+import { SITE, PILIERS_LISTE } from '../consts';
+import { lien } from '../lib/lien';
+const chemin = Astro.url.pathname.replace(/\/$/, '');
+
+/**
+ * Vrai si la page courante est cette rubrique, ou un article sous elle.
+ *
+ * Un simple startsWith('/' + slug) est faux des qu'une base est configuree :
+ * sous /devops-ma, toute page du site commence par « /devops » et la rubrique
+ * DevOps s'affichait comme active partout. On compare donc au lien complet,
+ * en exigeant une fin de chemin ou un segment suivant.
+ */
+const estCourante = (slug: string) => {
+  const cible = lien(`/${slug}`).replace(/\/$/, '');
+  return chemin === cible || chemin.startsWith(`${cible}/`);
+};
+---
+<header class="entete">
+  <div class="enveloppe entete-inner">
+    <a href={lien("/")} class="marque">{SITE.title}</a>
+
+    <nav aria-label="Rubriques">
+      <ul>
+        {PILIERS_LISTE.map((p) => (
+          <li>
+            <a
+              href={lien(`/${p.slug}`)}
+              data-pilier={p.slug}
+              class="lien-pilier"
+              aria-current={estCourante(p.slug) ? 'page' : undefined}
+            >
+              <span class="point" aria-hidden="true"></span>{p.nom}
+            </a>
+          </li>
+        ))}
+        <li><a href={lien("/a-propos")} aria-current={chemin === lien('/a-propos').replace(/\/$/, '') ? 'page' : undefined}>À propos</a></li>
+        <li>
+          <a href={lien("/recherche")} class="lien-icone" aria-label="Rechercher">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" aria-hidden="true">
+              <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.6" />
+              <path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+            </svg>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <button id="bascule-theme" type="button" aria-label="Basculer le thème clair/sombre" title="Thème">
+      <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+        <g class="soleil">
+          <circle cx="8" cy="8" r="3.4" fill="currentColor" />
+          <path
+            d="M8 .8v2.1M8 13.1v2.1M15.2 8h-2.1M2.9 8H.8M13.1 13.1l-1.5-1.5M4.4 4.4 2.9 2.9M13.1 2.9l-1.5 1.5M4.4 11.6l-1.5 1.5"
+            stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+          />
+        </g>
+        <path
+          class="lune"
+          d="M13.2 10.3A5.8 5.8 0 0 1 5.7 2.8a5.8 5.8 0 1 0 7.5 7.5Z"
+          fill="currentColor"
+        />
+      </svg>
+    </button>
+  </div>
+</header>
+
+<style>
+  .entete {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    border-bottom: 1px solid var(--trait);
+    /* Translucide plutot qu'opaque : le contenu qui defile dessous reste
+       perceptible, ce qui evite l'effet de bandeau colle sur la page. */
+    background: color-mix(in srgb, var(--fond) 80%, transparent);
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    backdrop-filter: blur(14px) saturate(150%);
+  }
+  .entete-inner { display: flex; align-items: center; gap: 30px; padding-block: 12px; }
+
+  .marque {
+    font-family: var(--mono); font-weight: 600; font-size: 16px; letter-spacing: -.03em;
+    line-height: 1.2; text-decoration: none; white-space: nowrap;
+    transition: color var(--transition);
+  }
+  .marque:hover { color: var(--accent); }
+
+  nav { flex: 1; }
+  nav ul { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; list-style: none; margin: 0; padding: 0; }
+  nav a { font-size: 14px; color: var(--texte-doux); text-decoration: none; }
+  nav a:hover { color: var(--texte); }
+
+  .lien-pilier { display: inline-flex; align-items: center; gap: 7px; }
+  .point {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    opacity: .35;
+    transition: opacity var(--transition), box-shadow var(--transition);
+  }
+  .lien-pilier:hover .point { opacity: 1; }
+  .lien-pilier:hover { color: var(--accent); }
+  nav a[aria-current='page'] { color: var(--texte); font-weight: 560; }
+  .lien-pilier[aria-current='page'] .point {
+    opacity: 1;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+
+  .lien-icone { display: inline-flex; padding: 4px; }
+
+  #bascule-theme {
+    display: grid; place-items: center;
+    background: none; border: 1px solid var(--trait); border-radius: 7px;
+    color: var(--texte-doux); cursor: pointer;
+    width: 31px; height: 31px; flex-shrink: 0; padding: 0;
+    transition: color var(--transition), border-color var(--transition), transform var(--transition);
+  }
+  #bascule-theme:hover { color: var(--accent); border-color: var(--accent); }
+  #bascule-theme:active { transform: scale(.92); }
+  /* Soleil en clair, croissant en sombre : les deux formes sont dans le SVG,
+     seule leur visibilite change — aucune requete, aucun script. */
+  #bascule-theme .lune { display: none; }
+  :root[data-theme='dark'] #bascule-theme .soleil { display: none; }
+  :root[data-theme='dark'] #bascule-theme .lune { display: block; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) #bascule-theme .soleil { display: none; }
+    :root:not([data-theme='light']) #bascule-theme .lune { display: block; }
+  }
+
+  @media (max-width: 640px) {
+    .entete-inner { flex-wrap: wrap; gap: 10px 16px; }
+    nav { flex-basis: 100%; order: 3; }
+    nav ul { gap: 4px 13px; font-size: 13.5px; }
+    nav a { font-size: inherit; }
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const bouton = document.getElementById('bascule-theme');
+    if (!bouton) return;
+    bouton.addEventListener('click', () => {
+      const sombreActuel =
+        document.documentElement.dataset.theme
+          ? document.documentElement.dataset.theme === 'dark'
+          : matchMedia('(prefers-color-scheme: dark)').matches;
+      const suivant = sombreActuel ? 'light' : 'dark';
+      document.documentElement.dataset.theme = suivant;
+      try { localStorage.setItem('theme', suivant); } catch {}
+    });
+  })();
+</script>

@@ -1,0 +1,29 @@
+---
+import CarteArticle from './CarteArticle.astro';
+import type { Article } from '../lib/articles';
+
+interface Props { articles: Article[]; montrerPilier?: boolean; vide?: string }
+const {
+  articles,
+  montrerPilier = true,
+  vide = 'Rien ici pour l’instant. Les articles arrivent au rythme des labos terminés.',
+} = Astro.props;
+---
+{articles.length === 0 ? (
+  <p class="vide">{vide}</p>
+) : (
+  <div class="liste">
+    {articles.map((article) => <CarteArticle article={article} montrerPilier={montrerPilier} />)}
+  </div>
+)}
+
+<style>
+  .liste { margin-top: .5rem; }
+  .vide {
+    color: var(--texte-doux);
+    border: 1px dashed var(--trait);
+    border-radius: 10px;
+    padding: 1.4rem;
+    margin-top: 1.2rem;
+  }
+</style>

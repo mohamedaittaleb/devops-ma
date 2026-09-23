@@ -1,0 +1,197 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import DateFr from '../../components/Date.astro';
+import Sponsor from '../../components/Sponsor.astro';
+import { SITE } from '../../consts';
+import {
+  tousLesArticles, minutesDeLecture, lienArticle, pilierDe, lienTag, type Article,
+} from '../../lib/articles';
+import { lien } from '../../lib/lien';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const articles = await tousLesArticles();
+  // Tri decroissant : l'element suivant dans le tableau est l'article precedent dans le temps.
+  return articles.map((article, i) => ({
+    params: { slug: article.id },
+    props: {
+      article,
+      plusAncien: articles[i + 1] ?? null,
+      plusRecent: articles[i - 1] ?? null,
+    },
+  }));
+};
+
+interface Props {
+  article: Article;
+  plusAncien: Article | null;
+  plusRecent: Article | null;
+}
+const { article, plusAncien, plusRecent } = Astro.props;
+const { Content } = await render(article);
+const pilier = pilierDe(article);
+const minutes = minutesDeLecture(article);
+---
+<Base
+  titre={article.data.titre}
+  description={article.data.resume}
+  type="article"
+  publieLe={article.data.date}
+  noindex={article.data.brouillon}
+>
+  <!-- data-pagefind-body : seules les pages d'article entrent dans l'index.
+       Sans lui, Pagefind indexe aussi l'accueil, les archives et les 12 pages de
+       tag, qui ne font que repeter les resumes : trois resultats pour un article. -->
+  <!-- data-pilier porte sur l'ensemble : sans cela la barre de progression,
+       posee hors de l'article, gardait l'accent de marque au lieu de celui
+       de la rubrique. -->
+  <div data-pilier={article.data.pilier}>
+    <div class="progression" aria-hidden="true"></div>
+
+    <article class="enveloppe" data-pagefind-body>
+    <header class="tete">
+      <p class="fil">
+        <a href={lien(`/${pilier.slug}`)} class="fil-pilier">
+          <span class="point" aria-hidden="true"></span>{pilier.nom}
+        </a>
+        {article.data.brouillon && <span class="brouillon">brouillon</span>}
+      </p>
+      <h1>{article.data.titre}</h1>
+      <p class="chapeau">{article.data.resume}</p>
+      <p class="meta">
+        <DateFr date={article.data.date} />
+        <span aria-hidden="true">·</span>
+        <span>{minutes} min de lecture</span>
+        {article.data.maj && (
+          <><span aria-hidden="true">·</span><span>mis à jour le <DateFr date={article.data.maj} /></span></>
+        )}
+      </p>
+      {article.data.repo && (
+        <p class="repo">
+          <a href={article.data.repo} rel="noopener">Code et fichiers de configuration ↗</a>
+        </p>
+      )}
+    </header>
+
+    <div class="prose"><Content /></div>
+
+    <footer class="fin" data-pagefind-ignore>
+      <ul class="tags">
+        {article.data.tags.map((tag) => <li><a href={lienTag(tag)}>#{tag}</a></li>)}
+      </ul>
+
+      <Sponsor />
+
+      <p class="reaction">
+        Une correction, un contre-exemple, des chiffres différents ?
+        <a href={`mailto:${SITE.email}?subject=${encodeURIComponent(article.data.titre)}`}>Écrivez-moi</a> —
+        les corrections sont intégrées et créditées.
+      </p>
+
+      <nav class="voisins" aria-label="Autres articles">
+        {plusAncien ? (
+          <a class="voisin" href={lienArticle(plusAncien)} rel="prev">
+            <span class="etiquette">Précédent</span>
+            <span>{plusAncien.data.titre}</span>
+          </a>
+        ) : <span />}
+        {plusRecent && (
+          <a class="voisin droite" href={lienArticle(plusRecent)} rel="next">
+            <span class="etiquette">Suivant</span>
+            <span>{plusRecent.data.titre}</span>
+          </a>
+        )}
+      </nav>
+      </footer>
+    </article>
+  </div>
+</Base>
+
+<style>
+  /* Barre de progression de lecture, en CSS pur : la timeline de defilement
+     evite un ecouteur de scroll en JavaScript. Hors @supports, la barre reste
+     masquee plutot que figee a 100 %. */
+  .progression { display: none; }
+  @supports (animation-timeline: scroll()) {
+    .progression {
+      display: block;
+      position: fixed; inset: 0 0 auto; height: 2px; z-index: 50;
+      background: var(--accent);
+      transform-origin: 0 50%;
+      animation-name: progresser;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      /* Voir global.css : sans `auto`, la barre resterait pleine en haut de page. */
+      animation-duration: auto;
+      animation-timeline: scroll(root block);
+    }
+  }
+  @keyframes progresser { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  .tete { padding-block: 2.8rem 1.8rem; border-bottom: 1px solid var(--trait); margin-bottom: 2.2rem; }
+  .fil { display: flex; align-items: center; gap: 10px; margin: 0 0 .9rem; font-family: var(--mono); font-size: 12px; }
+  .fil a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .fil-pilier { display: inline-flex; align-items: center; gap: 7px; }
+  .point {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+  .brouillon {
+    border: 1px solid var(--accent); color: var(--accent);
+    border-radius: 4px; padding: 0 6px; text-transform: uppercase; letter-spacing: .05em;
+  }
+  .tete h1 {
+    font-size: clamp(1.65rem, 4.8vw, 2.2rem); line-height: 1.2;
+    font-weight: 640; letter-spacing: -.035em; margin: 0 0 .8rem; max-width: 24ch;
+    text-wrap: balance;
+  }
+  .chapeau {
+    margin: 0 0 1.2rem; color: var(--texte-doux); max-width: 58ch;
+    font-family: var(--police-lecture); font-size: 1.08rem; line-height: 1.66;
+  }
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 8px; margin: 0;
+    font-family: var(--mono); font-size: 12.5px; color: var(--texte-doux);
+  }
+  .repo { margin: 1.1rem 0 0; }
+  .repo a {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--mono); font-size: 12.5px;
+    color: var(--accent); text-decoration: none;
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--trait));
+    border-radius: 7px; padding: 5px 11px;
+    transition: background var(--transition), border-color var(--transition);
+  }
+  .repo a:hover {
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    border-color: var(--accent);
+  }
+
+  .fin { margin-top: 3.5rem; }
+  .tags { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 1.5rem; padding: 0; }
+  .tags a {
+    font-family: var(--mono); font-size: 12.5px; text-decoration: none;
+    border: 1px solid var(--trait); border-radius: 999px; padding: 3px 11px;
+  }
+  .tags a:hover { border-color: var(--accent); color: var(--accent); }
+  .reaction { font-size: .93rem; color: var(--texte-doux); margin: 0 0 2.2rem; }
+
+  .voisins { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-top: 1.6rem; border-top: 1px solid var(--trait); }
+  .voisin {
+    display: flex; flex-direction: column; gap: 5px; font-size: .93rem;
+    text-decoration: none; padding: .9rem 1rem;
+    border: 1px solid var(--trait); border-radius: 10px;
+    transition: border-color var(--transition), background var(--transition);
+  }
+  .voisin:hover {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 50%, var(--trait));
+    background: var(--fond-2);
+  }
+  .voisin.droite { text-align: right; }
+  @media (max-width: 560px) {
+    .voisins { grid-template-columns: 1fr; }
+    .voisin.droite { text-align: left; }
+  }
+</style>

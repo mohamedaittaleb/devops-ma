@@ -1,0 +1,88 @@
+---
+import Base from '../layouts/Base.astro';
+import EnteteDePage from '../components/EnteteDePage.astro';
+import { lien } from '../lib/lien';
+
+// Pagefind est genere apres `astro build` (voir le script `build` du package.json).
+// En `astro dev` l'index n'existe pas encore : la page l'annonce au lieu d'echouer.
+const enDev = import.meta.env.DEV;
+
+// Pagefind indexe des chemins de fichiers et stocke donc des URLs relatives a
+// la racine du dossier construit (/articles/x). Sous une page de projet
+// GitHub Pages, le site vit sous /devops-ma : sans cette base, chaque resultat
+// pointerait une page inexistante. `baseUrl` n'est pas une option de l'UI, elle
+// est transmise telle quelle au coeur Pagefind qui prefixe les resultats.
+const basePagefind = lien('/');
+---
+<Base
+  titre="Recherche"
+  description="Rechercher dans tous les articles de devops.ma. Index statique, aucune requête vers un service tiers."
+  noindex={true}
+>
+  <EnteteDePage
+    kicker="Index local"
+    titre="Recherche"
+    chapeau="L’index est construit au déploiement et servi depuis ce domaine. Aucune requête ne part vers un service tiers."
+  />
+
+  <div class="enveloppe">
+    {enDev && (
+      <p class="avis">
+        Index absent en développement — lancez <code>npm run build &amp;&amp; npm run preview</code>
+        pour tester la recherche.
+      </p>
+    )}
+    <div id="recherche"></div>
+    <noscript>
+      <p class="avis">
+        La recherche nécessite JavaScript. Sans lui, passez par les
+        <a href={lien("/archives")}>archives</a> ou le <a href={lien("/rss.xml")}>flux RSS</a>.
+      </p>
+    </noscript>
+  </div>
+</Base>
+
+<link rel="stylesheet" href={lien("/pagefind/pagefind-ui.css")} />
+
+<script is:inline src={lien("/pagefind/pagefind-ui.js")} defer></script>
+<script is:inline define:vars={{ BASE_PAGEFIND: basePagefind }}>
+  window.addEventListener('load', () => {
+    if (typeof PagefindUI === 'undefined') return;
+    new PagefindUI({
+      element: '#recherche',
+      baseUrl: BASE_PAGEFIND,
+      showSubResults: true,
+      showImages: false,
+      excerptLength: 25,
+      translations: {
+        placeholder: 'Rechercher un article…',
+        clear_search: 'Effacer',
+        load_more: 'Voir plus de résultats',
+        search_label: 'Rechercher sur ce site',
+        filters_label: 'Filtres',
+        zero_results: 'Aucun résultat pour [SEARCH_TERM]',
+        many_results: '[COUNT] résultats pour [SEARCH_TERM]',
+        one_result: '1 résultat pour [SEARCH_TERM]',
+        searching: 'Recherche de [SEARCH_TERM]…',
+      },
+    });
+  });
+</script>
+
+<style>
+  .avis {
+    border: 1px dashed var(--trait); border-radius: 8px; padding: 12px 14px;
+    color: var(--texte-doux); font-size: .92rem;
+  }
+  #recherche {
+    --pagefind-ui-scale: .85;
+    --pagefind-ui-primary: var(--texte);
+    --pagefind-ui-text: var(--texte);
+    --pagefind-ui-background: var(--fond);
+    --pagefind-ui-border: var(--trait);
+    --pagefind-ui-tag: var(--fond-2);
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: 8px;
+    --pagefind-ui-font: var(--police);
+  }
+</style>

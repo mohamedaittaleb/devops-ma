@@ -1,0 +1,103 @@
+---
+import DateFr from './Date.astro';
+import { minutesDeLecture, lienArticle, pilierDe, type Article } from '../lib/articles';
+
+interface Props { article: Article; montrerPilier?: boolean }
+const { article, montrerPilier = true } = Astro.props;
+const pilier = pilierDe(article);
+---
+<article class="carte apparait" data-pilier={article.data.pilier}>
+  <a class="carte-lien" href={lienArticle(article)} aria-labelledby={`t-${article.id}`}></a>
+
+  <div class="carte-meta">
+    {montrerPilier && (
+      <span class="puce"><span class="point" aria-hidden="true"></span>{pilier.nom}</span>
+    )}
+    <DateFr date={article.data.date} />
+    <span aria-hidden="true">·</span>
+    <span>{minutesDeLecture(article)} min</span>
+    {article.data.brouillon && <span class="brouillon">brouillon</span>}
+  </div>
+
+  <h2 class="carte-titre" id={`t-${article.id}`}>
+    {article.data.titre}
+    <span class="fleche" aria-hidden="true">→</span>
+  </h2>
+
+  <p class="carte-resume">{article.data.resume}</p>
+
+  <ul class="carte-tags" aria-hidden="true">
+    {article.data.tags.slice(0, 3).map((tag) => <li>{tag}</li>)}
+  </ul>
+</article>
+
+<style>
+  .carte {
+    position: relative;
+    padding: 1.5rem 1.2rem 1.4rem;
+    margin-inline: -1.2rem;
+    border-radius: 12px;
+    transition: background var(--transition), transform var(--transition);
+  }
+  /* Le lien couvre toute la carte : la zone cliquable est la carte entiere,
+     mais le nom accessible reste le titre, pas un paragraphe entier. */
+  .carte-lien { position: absolute; inset: 0; border-radius: inherit; z-index: 1; }
+  .carte-lien:focus-visible { outline-offset: -3px; }
+
+  .carte::after {
+    content: '';
+    position: absolute;
+    left: 1.2rem; right: 1.2rem; bottom: 0;
+    height: 1px;
+    background: var(--trait);
+  }
+  .carte:last-child::after { display: none; }
+
+  .carte:hover { background: var(--fond-2); }
+  @media (min-width: 720px) { .carte:hover { transform: translateX(3px); } }
+
+  .carte-meta {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 9px;
+    font-family: var(--mono); font-size: 11.5px; font-weight: 450;
+    color: var(--texte-tres-doux);
+  }
+  .puce { display: inline-flex; align-items: center; gap: 6px; color: var(--accent); font-weight: 500; }
+  .point {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+    transition: box-shadow var(--transition);
+  }
+  .carte:hover .point { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+  .brouillon {
+    border: 1px solid var(--accent); color: var(--accent);
+    border-radius: 4px; padding: 0 6px; text-transform: uppercase; letter-spacing: .06em;
+  }
+
+  .carte-titre {
+    font-size: 1.24rem; line-height: 1.32; font-weight: 620; letter-spacing: -.022em;
+    margin: .45rem 0 .45rem;
+    transition: color var(--transition);
+  }
+  .carte:hover .carte-titre { color: var(--accent); }
+  .fleche {
+    display: inline-block;
+    margin-left: .3em;
+    color: var(--accent);
+    opacity: 0;
+    transform: translateX(-5px);
+    transition: opacity var(--transition), transform var(--transition);
+  }
+  .carte:hover .fleche { opacity: 1; transform: none; }
+
+  .carte-resume { margin: 0; color: var(--texte-doux); font-size: .95rem; line-height: 1.6; }
+
+  .carte-tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    list-style: none; margin: .85rem 0 0; padding: 0;
+  }
+  .carte-tags li {
+    font-family: var(--mono); font-size: 11px; color: var(--texte-tres-doux);
+    border: 1px solid var(--trait); border-radius: 999px; padding: 1px 8px;
+    transition: border-color var(--transition);
+  }
+  .carte:hover .carte-tags li { border-color: var(--trait-fort); }
+</style>

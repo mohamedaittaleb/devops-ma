@@ -1,0 +1,41 @@
+---
+import { SPONSOR } from '../data/sponsor';
+import { SITE } from '../consts';
+---
+<aside class="sponsor" aria-label="Emplacement sponsor">
+  {SPONSOR.actif ? (
+    <a href={SPONSOR.url} rel="sponsored noopener" class="sponsor-lien">
+      {SPONSOR.logo && <img src={SPONSOR.logo} alt="" width="28" height="28" loading="lazy" />}
+      <span>
+        <strong>{SPONSOR.nom}</strong>
+        <span class="sponsor-accroche">{SPONSOR.accroche}</span>
+      </span>
+      <span class="etiquette">Sponsor</span>
+    </a>
+  ) : (
+    <a href={`mailto:${SITE.email}?subject=Sponsoring%20devops.ma`} class="sponsor-lien sponsor-vide">
+      <span>Cet emplacement est disponible — un sponsor à la fois, sans script tiers.</span>
+      <span class="etiquette">Nous écrire</span>
+    </a>
+  )}
+</aside>
+
+<style>
+  /* Hauteur reservee en permanence : activer un sponsor ne decale rien. */
+  .sponsor { min-height: 68px; display: flex; align-items: center; margin-block: 2rem; }
+  .sponsor-lien {
+    display: flex; align-items: center; gap: 12px; width: 100%;
+    padding: 12px 14px;
+    border: 1px dashed var(--trait); border-radius: 8px;
+    background: var(--fond-2);
+    text-decoration: none; font-size: 14px; color: var(--texte-doux);
+  }
+  .sponsor-lien:hover { border-color: var(--accent); }
+  .sponsor-lien > span:first-of-type { flex: 1; display: flex; flex-direction: column; }
+  .sponsor-lien strong { color: var(--texte); font-weight: 640; }
+  .sponsor-accroche { font-size: 13px; }
+  .sponsor-vide { font-style: italic; }
+  @media (max-width: 520px) {
+    .sponsor-lien { flex-wrap: wrap; }
+  }
+</style>
