@@ -14,8 +14,10 @@ import { SITE, PILIERS_LISTE } from '../consts';
     <div class="prose">
       <h2>Qui écrit</h2>
       <p>
-        <strong>{SITE.auteur}</strong> — DevOps. Je travaille sur des chaînes de livraison
-        et des clusters, au contact d’équipes qui mettent des modèles en production.
+        <strong>{SITE.auteur}</strong> — DevOps, dix ans de métier, certifié{' '}
+        <abbr title="Certified Kubernetes Administrator">CKA</abbr> (certification à jour).
+        Je travaille sur des chaînes de livraison et des clusters, au contact d’équipes qui
+        mettent des modèles en production.
       </p>
       <p>
         Ce carnet couvre les trois choses qui occupent mes journées : automatiser ce qui se
@@ -24,6 +26,23 @@ import { SITE, PILIERS_LISTE } from '../consts';
       </p>
       <p class="profil">
         <a href={SITE.linkedin} rel="me noopener">Parcours détaillé sur LinkedIn ↗</a>
+      </p>
+
+      <h2>Où va ce carnet</h2>
+      <p>
+        L’objectif dépasse la publication d’articles : réunir une <strong>communauté
+        francophone du DevOps à l’ère de l’IA</strong>, au Maroc et au-delà. Les deux mondes
+        se croisent tous les jours en production et se parlent peu — les uns connaissent les
+        modèles, les autres les clusters, et presque personne n’écrit ce qui se passe à la
+        jonction. Encore moins en français.
+      </p>
+      <p>
+        Le site commence par des articles parce qu’il faut bien commencer par quelque chose.
+        La suite dépend de qui répond : corrections, retours d’expérience contradictoires,
+        articles invités, sujets qu’on me signale parce que je ne les ai pas vus. Si ce
+        terrain est aussi le vôtre,{' '}
+        <a href={`mailto:${SITE.email}?subject=Communaut%C3%A9%20devops.ma`}>écrivez-moi</a> —
+        c’est comme ça que ça démarre.
       </p>
 
       <h2>Ce que vous trouverez ici</h2>
@@ -59,7 +78,7 @@ import { SITE, PILIERS_LISTE } from '../consts';
         </li>
       </ul>
       <p>
-        Les articles corrigés portent une date de mise à jour. Si vous trouvez une erreur,
+        Les articles corrigés portent une date de mise à jour. Si vous trouvez une erreur,{' '}
         <a href={`mailto:${SITE.email}`}>écrivez-moi</a> : la correction est intégrée et créditée.
       </p>
 
@@ -73,7 +92,7 @@ import { SITE, PILIERS_LISTE } from '../consts';
         Le site accueille <strong>un seul sponsor à la fois</strong> : une image et une ligne
         de texte, servies depuis ce domaine, sans JavaScript tiers. L’emplacement est réservé
         en permanence dans la mise en page, pour qu’activer un sponsor ne décale jamais le
-        contenu sous vos yeux. Si cela vous intéresse,
+        contenu sous vos yeux. Si cela vous intéresse,{' '}
         <a href={`mailto:${SITE.email}?subject=Sponsoring%20devops.ma`}>proposez-le</a>.
       </p>
 
