@@ -6,12 +6,26 @@ import { SITE, PILIERS_LISTE } from '../consts';
 ---
 <Base
   titre="À propos"
-  description="Qui écrit devops.ma, comment les articles sont produits, et ce que le site ne fait pas."
+  description="Mohamed Ait Taleb, DevOps : qui écrit devops.ma, comment les articles sont produits, et ce que le site ne fait pas."
 >
   <EnteteDePage kicker="Le site" titre="À propos" chapeau={SITE.baseline} />
 
   <article class="enveloppe">
     <div class="prose">
+      <h2>Qui écrit</h2>
+      <p>
+        <strong>{SITE.auteur}</strong> — DevOps. Je travaille sur des chaînes de livraison
+        et des clusters, au contact d’équipes qui mettent des modèles en production.
+      </p>
+      <p>
+        Ce carnet couvre les trois choses qui occupent mes journées : automatiser ce qui se
+        répète, sécuriser ce qui se déploie, et mesurer ce que l’IA change réellement dans
+        l’exploitation — plutôt que ce qu’on lui prête.
+      </p>
+      <p class="profil">
+        <a href={SITE.linkedin} rel="me noopener">Parcours détaillé sur LinkedIn ↗</a>
+      </p>
+
       <h2>Ce que vous trouverez ici</h2>
       <p>
         Un carnet technique tenu par {SITE.auteur}, en français. Trois rubriques, pas
@@ -82,4 +96,21 @@ import { SITE, PILIERS_LISTE } from '../consts';
 
 <style>
   .prose { padding-top: 1rem; }
+
+  /* Le lien de profil est le seul appel a l'action de la page : on lui donne
+     la meme forme qu'au bouton « depot » en tete d'article, pour qu'il se
+     distingue des liens de paragraphe sans crier. */
+  .prose .profil { margin-top: 1.1rem; }
+  .prose .profil a {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--mono); font-size: 12.5px;
+    color: var(--accent); text-decoration: none;
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--trait));
+    border-radius: 7px; padding: 6px 12px;
+    transition: background var(--transition), border-color var(--transition);
+  }
+  .prose .profil a:hover {
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    border-color: var(--accent);
+  }
 </style>
