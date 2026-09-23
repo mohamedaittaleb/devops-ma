@@ -1,10 +1,16 @@
 ---
 import { SPONSOR } from '../data/sponsor';
 import { SITE } from '../consts';
+import { lien } from '../lib/lien';
+
+// Les deux variables portent l'identite du sponsor jusqu'au CSS. Le composant
+// n'a ainsi aucune couleur de marque en dur : le prochain sponsor changera
+// sponsor.ts, pas cette feuille de style.
+const teintes = `--sp-fond: ${SPONSOR.fond}; --sp-couleur: ${SPONSOR.couleur};`;
 ---
 <aside class="sponsor" aria-label="Emplacement sponsor">
   {SPONSOR.actif ? (
-    <a href={SPONSOR.url} rel="sponsored noopener" class="carte">
+    <a href={SPONSOR.url} rel="sponsored noopener" class="carte marque" style={teintes}>
       <p class="bandeau">
         <span class="point" aria-hidden="true"></span>
         <span class="etiquette">Sponsor</span>
@@ -13,9 +19,17 @@ import { SITE } from '../consts';
       <p class="slogan">{SPONSOR.accroche}</p>
 
       <p class="invite">
-        {SPONSOR.logo && <img src={SPONSOR.logo} alt="" width="26" height="26" loading="lazy" />}
-        <strong>{SPONSOR.nom}</strong>
-        <span class="appel">Visiter le site <span aria-hidden="true">&#8599;</span></span>
+        {SPONSOR.logo && (
+          <img
+            src={lien(SPONSOR.logo)}
+            alt={SPONSOR.nom}
+            width={SPONSOR.logoLargeur}
+            height={SPONSOR.logoHauteur}
+            loading="lazy"
+            decoding="async"
+          />
+        )}
+        <span class="appel">{SPONSOR.appel} <span aria-hidden="true">&#8599;</span></span>
       </p>
     </a>
   ) : (
@@ -36,101 +50,118 @@ import { SITE } from '../consts';
 </aside>
 
 <style>
-  /* Hauteur reservee en permanence, et surtout identique dans les deux etats :
-     les deux cartes ont la meme structure a trois lignes, donc activer ou
-     retirer un sponsor ne decale jamais ce qui suit. */
-  .sponsor { min-height: 128px; display: flex; margin-block: 2.4rem; }
+  /* Hauteur reservee en permanence, et identique dans les deux etats : meme
+     structure a trois lignes, donc activer ou retirer un sponsor ne decale
+     jamais ce qui suit. */
+  .sponsor { min-height: 132px; display: flex; margin-block: 2.4rem; }
 
   .carte {
-    position: relative;
-    display: flex; flex-direction: column; gap: 8px;
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; gap: 9px;
     width: 100%; padding: 14px 16px 15px 19px;
-    border: 1px solid color-mix(in srgb, var(--sponsor) 38%, var(--trait));
-    border-radius: 10px;
-    /* Fond teinte plutot que plat : l'encart se detache du texte de l'article
-       sans avoir besoin d'une image ni d'une bordure epaisse. */
-    background:
-      linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--sponsor) 9%, var(--fond)),
-        color-mix(in srgb, var(--sponsor) 4%, var(--fond))
-      );
+    border-radius: 6px;
     text-decoration: none;
-    transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+    transition: border-color var(--transition);
   }
 
-  /* Filet vertical : le seul aplat franc de couleur, pose sur le bord. */
+  /* Filet vertical : le seul aplat de couleur de marque, et il fait 3 px.
+     Tout le reste de la carte est du texte sur un fond uni. */
   .carte::before {
-    content: '';
-    position: absolute; inset: 0 auto 0 0; width: 3px;
-    border-radius: 10px 0 0 10px;
-    background: var(--sponsor);
+    content: ''; position: absolute; inset: 0 auto 0 0; width: 3px;
   }
 
-  .carte:hover {
-    border-color: var(--sponsor);
-    box-shadow: var(--ombre-levee);
-    transform: translateY(-1px);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .carte { transition: none; }
-    .carte:hover { transform: none; }
-  }
+  .bandeau { display: flex; align-items: center; gap: 8px; margin: 0; }
+  .point { width: 5px; height: 5px; border-radius: 1px; }
 
-  .bandeau { display: flex; align-items: center; gap: 7px; margin: 0; }
-  .bandeau .etiquette { color: var(--sponsor); }
-  .point {
-    width: 6px; height: 6px; border-radius: 50%; background: var(--sponsor);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--sponsor) 22%, transparent);
-  }
-
-  /* Le slogan passe avant le nom : c'est lui qu'on lit, la marque vient apres. */
+  /* Le slogan passe avant la marque : c'est lui qu'on lit. */
   .slogan {
     margin: 0;
     font-family: var(--police-lecture);
-    font-size: 1.12rem; line-height: 1.45; font-weight: 500;
-    color: var(--texte);
+    font-size: 1.14rem; line-height: 1.45; font-weight: 500;
     text-wrap: balance;
   }
 
   .invite {
-    display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
-    margin: 2px 0 0; font-size: 14px; color: var(--texte-doux);
+    display: flex; align-items: center; flex-wrap: wrap; gap: 14px;
+    margin: 3px 0 0; font-size: 14px;
   }
-  .invite img { border-radius: 5px; }
-  .invite strong { color: var(--texte); font-weight: 640; }
+  .invite strong { font-weight: 640; }
 
-  /* L'invitation est un bouton a part entiere : sans lui, la carte se lit
-     comme une citation et personne ne clique. */
+  /* L'invitation reste un bouton -- sans lui la carte se lit comme une
+     citation et personne ne clique -- mais un bouton rectangulaire a bord
+     fin, pas une gelule qui brille. */
   .appel {
     margin-left: auto;
-    display: inline-flex; align-items: center; gap: 6px;
+    display: inline-flex; align-items: center; gap: 7px;
     font-family: var(--mono); font-size: 12.5px; font-weight: 500;
-    color: color-mix(in srgb, var(--sponsor) 88%, var(--texte));
-    border: 1px solid color-mix(in srgb, var(--sponsor) 45%, var(--trait));
-    border-radius: 999px; padding: 5px 12px;
-    background: var(--fond);
-    transition: background var(--transition), border-color var(--transition);
-  }
-  .carte:hover .appel {
-    background: var(--sponsor);
-    border-color: var(--sponsor);
-    color: var(--fond);
+    border-radius: 4px; padding: 6px 12px;
+    transition: background var(--transition), color var(--transition), border-color var(--transition);
   }
 
-  /* L'emplacement libre garde la meme carte, en retrait : bordure pointillee
-     et couleur neutre, pour ne pas annoncer un sponsor qui n'existe pas. */
-  .vide { border-style: dashed; background: var(--fond-2); }
+  /* ---------------------------------------------------------------
+     Sponsor actif : la carte prend les couleurs de la marque, fond compris,
+     et reste donc sombre dans les deux themes du site. C'est voulu : un
+     encart paye doit se lire comme un encart paye.
+
+     Le fond est uni et la couleur de marque n'apparait qu'a trois endroits
+     minuscules -- le filet, la puce, le bord du bouton. Un vert a saturation
+     maximale sur une grande surface, avec degrade et halo, donne exactement
+     l'encart generique qu'on voulait eviter : la retenue fait le travail.
+     Toutes les valeurs viennent de --sp-*, aucune n'est en dur.
+     --------------------------------------------------------------- */
+  .marque {
+    background: var(--sp-fond);
+    border: 1px solid rgb(255 255 255 / .12);
+  }
+  .marque::before { background: var(--sp-couleur); }
+  .marque:hover { border-color: rgb(255 255 255 / .28); }
+
+  /* L'etiquette reste grise : reserver la couleur aux trois accents lui rend
+     sa valeur de signal. */
+  .marque .etiquette { color: rgb(255 255 255 / .42); }
+  .marque .point { background: var(--sp-couleur); }
+  .marque .slogan { color: #fff; }
+
+  .marque img {
+    /* Affiche au tiers de sa taille reelle : le fichier fait 480 px de large,
+       ce qui couvre les ecrans a forte densite sans requete supplementaire. */
+    width: 160px; height: 40px; flex: none;
+  }
+
+  .marque .appel {
+    color: var(--sp-couleur);
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--sp-couleur) 45%, transparent);
+  }
+  .marque:hover .appel {
+    background: var(--sp-couleur);
+    border-color: var(--sp-couleur);
+    color: var(--sp-fond);
+  }
+
+  /* ---------------------------------------------------------------
+     Emplacement libre : meme carte, tenue neutre. Pas de couleur de marque,
+     puisqu'il n'y a pas de marque a annoncer.
+     --------------------------------------------------------------- */
+  .vide {
+    background: var(--fond-2);
+    border: 1px dashed var(--trait-fort);
+  }
   .vide::before { background: var(--trait-fort); }
-  .vide .bandeau .etiquette, .vide .point { color: var(--texte-tres-doux); }
-  .vide .point { background: var(--texte-tres-doux); box-shadow: none; }
+  .vide:hover { border-color: var(--texte-tres-doux); }
+  .vide .etiquette { color: var(--texte-tres-doux); }
+  .vide .point { background: var(--texte-tres-doux); }
   .vide .slogan { font-size: 1rem; color: var(--texte-doux); font-style: italic; }
-  .vide .appel { color: var(--texte-doux); border-color: var(--trait-fort); }
-  .vide:hover { border-color: var(--trait-fort); box-shadow: var(--ombre); }
-  .vide:hover .appel { background: var(--fond-3); border-color: var(--trait-fort); color: var(--texte); }
+  .vide strong { color: var(--texte); }
+  .vide .appel {
+    color: var(--texte-doux); background: var(--fond);
+    border: 1px solid var(--trait-fort);
+  }
+  .vide:hover .appel { background: var(--fond-3); color: var(--texte); }
 
   @media (max-width: 520px) {
-    .slogan { font-size: 1.05rem; }
+    .slogan { font-size: 1.06rem; }
     .appel { margin-left: 0; }
+    .marque img { width: 136px; height: 34px; }
   }
 </style>
