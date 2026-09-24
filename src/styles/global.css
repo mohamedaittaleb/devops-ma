@@ -380,3 +380,90 @@ a:hover { text-decoration-color: var(--accent); }
 .prose hr { border: 0; border-top: 1px solid var(--trait); margin-block: 2.6em; }
 .prose img, .prose video { max-width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--trait); }
 .prose figcaption { font-size: .85em; color: var(--texte-doux); margin-top: .5em; }
+
+/* --- Figures de donnees ---------------------------------------- */
+/*
+ * Les couleurs de serie ne sont PAS les accents du site. Un accent de rubrique
+ * est choisi pour du texte et des filets ; une palette de graphique doit en plus
+ * passer des controles de separation sous daltonisme et de contraste sur le fond.
+ * Les accents du site echouent a ces controles ; les valeurs ci-dessous les
+ * passent dans les deux themes, et sont steppees separement pour chacun.
+ *
+ * Les figures defilent horizontalement sous une certaine largeur plutot que de
+ * retrecir leur texte : meme traitement que les blocs de code et les tableaux.
+ */
+.prose .figure {
+  --viz-s1: #2a78d6;
+  --viz-s2: #eb6834;
+  --viz-bon: #0ca30c;
+  --viz-attention: #fab219;
+  --viz-critique: #d03b3b;
+
+  margin-block: 2.2em;
+}
+/* Seul le dessin defile : la legende et la legende de figure restent en place. */
+.prose .viz-cadre { overflow-x: auto; }
+.prose .viz-cadre svg { display: block; width: 100%; min-width: 520px; height: auto; }
+
+/* La couleur passe par `color`, et les marques utilisent currentColor : une
+   seule classe sur un groupe teinte tout ce qu'il contient, et le texte n'est
+   pas emporte puisque la regle de texte ci-dessous l'emporte sur l'heritage. */
+.prose .figure .c1 { color: var(--viz-s1); }
+.prose .figure .c2 { color: var(--viz-s2); }
+.prose .figure .c-gris { color: var(--texte-tres-doux); }
+.prose .figure .c-bon { color: var(--viz-bon); }
+.prose .figure .c-attention { color: var(--viz-attention); }
+.prose .figure .c-critique { color: var(--viz-critique); }
+
+/* Exception documentee a la regle « le texte ne porte jamais la couleur » :
+   une etiquette posee DANS un aplat prend l'encre qui contraste avec lui. */
+.prose .figure .viz-sur-sombre { fill: #fff; font-weight: 560; }
+.prose .figure .viz-sur-clair { fill: #16161a; font-weight: 560; }
+
+/* Le texte porte les jetons de texte, jamais la couleur d'une serie :
+   une teinte calibree pour une courbe est illisible en petit corps. */
+.prose .figure text { font-family: var(--police); font-size: 13px; fill: var(--texte-doux); }
+.prose .figure .viz-fort { fill: var(--texte); font-weight: 560; }
+.prose .figure .viz-tick { font-size: 12px; fill: var(--texte-tres-doux); font-variant-numeric: tabular-nums; }
+.prose .figure .viz-cle {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .07em;
+  text-transform: uppercase; fill: var(--texte-tres-doux);
+}
+
+/* Grille et axes : filet plein d'un cran sur le fond, jamais pointille. */
+.prose .figure .viz-grille { stroke: var(--trait); stroke-width: 1; fill: none; }
+.prose .figure .viz-repere { stroke: var(--trait-fort); stroke-width: 1; fill: none; }
+/* Ligne de reference (la diagonale d'une courbe de calibration) : un cran plus
+   marquee que la grille, pour se lire comme un repere et non comme un fond. */
+.prose .figure .viz-diagonale { stroke: var(--texte-tres-doux); stroke-width: 1; fill: none; }
+.prose .figure .viz-ligne { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+/* L'anneau de 2 px dans la couleur du fond garde les points lisibles la ou ils
+   croisent une courbe ; c'est lui qui separe, pas un contour. */
+.prose .figure .viz-point { stroke: var(--fond); stroke-width: 2; }
+
+/* Legende en HTML plutot qu'en SVG : elle garde sa taille reelle quand la
+   figure est mise a l'echelle. */
+.prose .legende-viz {
+  display: flex; flex-wrap: wrap; gap: 6px 18px;
+  margin: .7em 0 0; padding: 0; list-style: none;
+  font-size: .85em; color: var(--texte-doux);
+}
+.prose .legende-viz li { display: inline-flex; align-items: center; gap: 7px; }
+.prose .legende-viz i {
+  width: 14px; height: 3px; border-radius: 2px; background: currentColor; flex: none;
+}
+
+/* Les pas sombres sont choisis pour le fond sombre, pas deduits des pas clairs :
+   un simple eclaircissement sort de la bande de luminosite et fait retomber la
+   separation sous daltonisme. Les quatre couleurs d'etat tiennent sur les deux
+   fonds et ne sont donc pas redefinies. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .prose .figure {
+    --viz-s1: #3987e5;
+    --viz-s2: #d95926;
+  }
+}
+:root[data-theme='dark'] .prose .figure {
+  --viz-s1: #3987e5;
+  --viz-s2: #d95926;
+}
