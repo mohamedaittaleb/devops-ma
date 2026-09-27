@@ -6,3 +6,12 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Medias lourds : un fichier video pousse par megarde sur un depot public reste
+# atteignable par son empreinte de commit meme apres suppression.
+videos/
+*.mp4
+*.mov
+*.webm
+*.m4v
+*.srt

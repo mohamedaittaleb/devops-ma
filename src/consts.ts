@@ -33,6 +33,13 @@ export const PILIERS = {
     description:
       'Les agents entrent dans la chaîne de production. Ce qu’ils apportent réellement, ce qu’ils coûtent, et comment les gouverner.',
   },
+  cloud: {
+    slug: 'cloud',
+    nom: 'Cloud',
+    titre: 'Cloud',
+    description:
+      'AWS et les autres fournisseurs vus depuis l’exploitation : ce qu’un service impose, ce qu’il coûte à l’arrêt, et lequel choisir quand deux se ressemblent.',
+  },
 } as const;
 
 export type PilierSlug = keyof typeof PILIERS;

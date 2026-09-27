@@ -9,7 +9,7 @@ const articles = defineCollection({
     // Le resume sert de meta description ET de chapeau. Il est obligatoire :
     // un article sans promesse claire n'est pas pret a etre publie.
     resume: z.string().min(60).max(220),
-    pilier: z.enum(['devops', 'devsecops', 'ai-devops']),
+    pilier: z.enum(['devops', 'devsecops', 'ai-devops', 'cloud']),
     date: z.coerce.date(),
     maj: z.coerce.date().optional(),
     tags: z.array(z.string()).min(1).max(6),

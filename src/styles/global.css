@@ -31,6 +31,7 @@
   --devops: #0f6f7a;
   --devsecops: #a4303f;
   --ai-devops: #6b46c1;
+  --cloud: #8a5a12;
 
   --police: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --police-lecture: 'Source Serif 4 Variable', Georgia, 'Times New Roman', serif;
@@ -62,6 +63,7 @@
     --devops: #4fc4d3;
     --devsecops: #e0707f;
     --ai-devops: #b18ce8;
+    --cloud: #dfa860;
 
     --ombre: 0 1px 2px rgb(0 0 0 / .3), 0 4px 16px -4px rgb(0 0 0 / .4);
     --ombre-levee: 0 2px 4px rgb(0 0 0 / .35), 0 12px 32px -8px rgb(0 0 0 / .55);
@@ -83,6 +85,7 @@
   --devops: #4fc4d3;
   --devsecops: #e0707f;
   --ai-devops: #b18ce8;
+  --cloud: #dfa860;
 
   --ombre: 0 1px 2px rgb(0 0 0 / .3), 0 4px 16px -4px rgb(0 0 0 / .4);
   --ombre-levee: 0 2px 4px rgb(0 0 0 / .35), 0 12px 32px -8px rgb(0 0 0 / .55);
@@ -93,6 +96,7 @@
 [data-pilier='devops'] { --accent: var(--devops); --accent-texte: var(--devops); }
 [data-pilier='devsecops'] { --accent: var(--devsecops); --accent-texte: var(--devsecops); }
 [data-pilier='ai-devops'] { --accent: var(--ai-devops); --accent-texte: var(--ai-devops); }
+[data-pilier='cloud'] { --accent: var(--cloud); --accent-texte: var(--cloud); }
 
 * { box-sizing: border-box; }
 
