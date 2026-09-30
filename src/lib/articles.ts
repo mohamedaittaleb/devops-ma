@@ -9,8 +9,7 @@ const MOTS_PAR_MINUTE = 200;
 
 export function minutesDeLecture(article: Article): number {
   if (article.data.tempsLecture) return article.data.tempsLecture;
-  const mots = (article.body ?? '').trim().split(/\s+/).filter(Boolean).length;
-  return Math.max(1, Math.round(mots / MOTS_PAR_MINUTE));
+  return Math.max(1, Math.round(motsDe(article) / MOTS_PAR_MINUTE));
 }
 
 export function lienArticle(article: Article): string {
@@ -52,6 +51,35 @@ export function slugTag(tag: string): string {
 
 export function lienTag(tag: string): string {
   return lien(`/tags/${slugTag(tag)}`);
+}
+
+/** En dessous de ce nombre d'articles, une page de tag n'est ni indexee ni dans le sitemap. */
+export const TAGS_SEUIL_INDEX = 2;
+
+/** Nombre de mots du corps de l'article, pour wordCount et le temps de lecture. */
+export function motsDe(article: Article): number {
+  return (article.body ?? '').trim().split(/\s+/).filter(Boolean).length;
+}
+
+/**
+ * Les articles les plus proches d'un article donne : deux points par tag
+ * partage, un point pour la meme rubrique, le plus recent en cas d'egalite.
+ * Ce maillage relie les articles d'un meme sujet entre eux, ce qu'un moteur
+ * lit comme un ensemble coherent plutot que comme des pages isolees.
+ */
+export async function articlesProches(article: Article, nombre = 3): Promise<Article[]> {
+  const tags = new Set(article.data.tags.map(slugTag));
+  return (await tousLesArticles())
+    .filter((a) => a.id !== article.id)
+    .map((a) => ({
+      a,
+      score: a.data.tags.filter((t) => tags.has(slugTag(t))).length * 2
+        + (a.data.pilier === article.data.pilier ? 1 : 0),
+    }))
+    .filter(({ score }) => score > 0)
+    .sort((x, y) => y.score - x.score || y.a.data.date.valueOf() - x.a.data.date.valueOf())
+    .slice(0, nombre)
+    .map(({ a }) => a);
 }
 
 /** Tous les tags utilises, du plus frequent au moins frequent puis alphabetique. */

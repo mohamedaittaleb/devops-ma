@@ -1,0 +1,935 @@
+{
+  "source": {
+    "titre": "Associate DevOps Engineer — Advanced Assignment Book (50 Real-World Scenarios)",
+    "origine": "carrousel Instagram @clouddevopsengineer",
+    "planches": 17,
+    "langue_origine": "en"
+  },
+  "extrait_le": "2026-09-28",
+  "convention": {
+    "publie": "true des qu'un article de devops.ma traite le sujet",
+    "article": "slug de l'article qui le traite, null sinon",
+    "pilier_suggere": "rubrique visee : devops | devsecops | ai-devops | cloud",
+    "texte": "consignes et exigences laissees en anglais, telles qu'elles figurent sur les planches"
+  },
+  "total": 50,
+  "traites": 2,
+  "assignments": [
+    {
+      "id": 1,
+      "titre": "Multi-Environment Terraform Architecture",
+      "consigne": "Design reusable Terraform code to deploy separate environments (dev, staging, prod).",
+      "exigences": [
+        "Use modules.",
+        "Separate state files per environment.",
+        "Use remote backend (S3 + DynamoDB locking).",
+        "Use workspace or folder-based strategy.",
+        "Implement tagging strategy.",
+        "Implement environment-specific variables."
+      ],
+      "domaines": [
+        "terraform",
+        "iac"
+      ],
+      "pilier_suggere": "devops",
+      "publie": true,
+      "article": "terraform-trois-environnements"
+    },
+    {
+      "id": 2,
+      "titre": "Highly Available Web Tier (Terraform)",
+      "consigne": "Provision a highly available web tier.",
+      "exigences": [
+        "2 EC2 instances in different AZs",
+        "Application Load Balancer",
+        "Auto Scaling Group",
+        "CloudWatch alarms for scaling",
+        "Ensure zero downtime rolling updates."
+      ],
+      "domaines": [
+        "aws",
+        "terraform",
+        "ha"
+      ],
+      "pilier_suggere": "cloud",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 3,
+      "titre": "Secure VPC Architecture",
+      "consigne": "Design a VPC with a secure public/private split.",
+      "exigences": [
+        "Public and Private subnets",
+        "NAT Gateway",
+        "Bastion Host",
+        "Private EC2 instances",
+        "Restrictive security groups",
+        "Document traffic flow."
+      ],
+      "domaines": [
+        "aws",
+        "reseau",
+        "securite"
+      ],
+      "pilier_suggere": "cloud",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 4,
+      "titre": "Terraform State Recovery",
+      "consigne": "Simulate the loss of Terraform state and recover from it.",
+      "exigences": [
+        "Accidental deletion of Terraform state.",
+        "Recover infrastructure using import.",
+        "Handle drift detection.",
+        "Provide step-by-step documentation."
+      ],
+      "domaines": [
+        "terraform",
+        "iac"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 5,
+      "titre": "Blue/Green Deployment (AWS + Kubernetes)",
+      "consigne": "Deploy a Node.js app with a blue/green strategy.",
+      "exigences": [
+        "EKS",
+        "ALB",
+        "Two versions (v1, v2)",
+        "Gradual traffic switch",
+        "Rollback on failure."
+      ],
+      "domaines": [
+        "kubernetes",
+        "aws",
+        "deploiement"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 6,
+      "titre": "GitHub Actions CI/CD with Multi-Stage Docker",
+      "consigne": "Build a pipeline from test to deployment.",
+      "exigences": [
+        "Run tests",
+        "Scan with Trivy",
+        "Build Docker image",
+        "Push to ECR",
+        "Deploy to Kubernetes",
+        "Fail on vulnerability severity HIGH+"
+      ],
+      "domaines": [
+        "ci-cd",
+        "docker",
+        "github-actions"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 7,
+      "titre": "Self-Healing Kubernetes App",
+      "consigne": "Deploy an app that crashes randomly and recovers on its own.",
+      "exigences": [
+        "Crashes randomly",
+        "Must restart automatically",
+        "Configure liveness & readiness probes",
+        "Show logs proving self-healing"
+      ],
+      "domaines": [
+        "kubernetes",
+        "resilience"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 8,
+      "titre": "Horizontal & Vertical Scaling",
+      "consigne": "Implement both scaling axes and prove they trigger.",
+      "exigences": [
+        "HPA (CPU-based)",
+        "VPA (if supported)",
+        "Load testing to trigger scaling",
+        "Document scaling behavior"
+      ],
+      "domaines": [
+        "kubernetes",
+        "scaling"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 9,
+      "titre": "Kubernetes RBAC Isolation",
+      "consigne": "Isolate teams inside one cluster.",
+      "exigences": [
+        "Namespace per team",
+        "Role allowing read-only access",
+        "RoleBinding per user",
+        "Prevent cross-namespace access"
+      ],
+      "domaines": [
+        "kubernetes",
+        "rbac",
+        "securite"
+      ],
+      "pilier_suggere": "devsecops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 10,
+      "titre": "Ingress with TLS",
+      "consigne": "Expose services over HTTPS with automatic certificates.",
+      "exigences": [
+        "NGINX Ingress Controller",
+        "Let's Encrypt certificate",
+        "Domain routing",
+        "HTTPS redirection"
+      ],
+      "domaines": [
+        "kubernetes",
+        "tls",
+        "reseau"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 11,
+      "titre": "Centralized Logging Stack",
+      "consigne": "Collect and explore logs from the whole cluster.",
+      "exigences": [
+        "EFK (Elasticsearch, Fluentd, Kibana)",
+        "Collect logs from all pods",
+        "Filter logs by namespace",
+        "Create dashboard"
+      ],
+      "domaines": [
+        "observabilite",
+        "logs"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 12,
+      "titre": "Prometheus Monitoring Stack",
+      "consigne": "Install a full metrics stack and alert on it.",
+      "exigences": [
+        "Prometheus",
+        "Grafana",
+        "Node Exporter",
+        "Custom application metrics",
+        "Create CPU alert rule."
+      ],
+      "domaines": [
+        "observabilite",
+        "prometheus"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 13,
+      "titre": "Python S3 Sync Tool (Advanced)",
+      "consigne": "Enhance an upload tool into a real sync tool.",
+      "exigences": [
+        "Compare local vs S3 checksums",
+        "Resume interrupted uploads",
+        "Handle multi-threading",
+        "Auto-delete removed files"
+      ],
+      "domaines": [
+        "python",
+        "aws",
+        "s3"
+      ],
+      "pilier_suggere": "cloud",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 14,
+      "titre": "Disaster Recovery Simulation",
+      "consigne": "Break the cluster on purpose and bring it back.",
+      "exigences": [
+        "Node failure",
+        "AZ failure",
+        "etcd corruption",
+        "Recover cluster without downtime."
+      ],
+      "domaines": [
+        "kubernetes",
+        "dr",
+        "resilience"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 15,
+      "titre": "Infrastructure Cost Optimization",
+      "consigne": "Analyze AWS usage and cut waste.",
+      "exigences": [
+        "Identify idle EC2",
+        "Identify unattached volumes",
+        "Generate cost report",
+        "Propose optimization strategy"
+      ],
+      "domaines": [
+        "aws",
+        "cout"
+      ],
+      "pilier_suggere": "cloud",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 16,
+      "titre": "CI/CD with Manual Approval Gate",
+      "consigne": "Add a human gate before production.",
+      "exigences": [
+        "Build",
+        "Security Scan",
+        "Deploy to staging",
+        "Manual approval",
+        "Deploy to production"
+      ],
+      "domaines": [
+        "ci-cd",
+        "gouvernance"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 17,
+      "titre": "Docker Security Hardening",
+      "consigne": "Harden a Dockerfile.",
+      "exigences": [
+        "Non-root user",
+        "Multi-stage builds",
+        "Minimal base image",
+        "Remove unnecessary packages"
+      ],
+      "domaines": [
+        "docker",
+        "securite"
+      ],
+      "pilier_suggere": "devsecops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 18,
+      "titre": "Kubernetes Network Policies",
+      "consigne": "Lock down pod-to-pod traffic.",
+      "exigences": [
+        "Deny all traffic",
+        "Allow frontend → backend only",
+        "Block backend → frontend",
+        "Verify using curl tests."
+      ],
+      "domaines": [
+        "kubernetes",
+        "reseau",
+        "securite"
+      ],
+      "pilier_suggere": "devsecops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 19,
+      "titre": "Canary Deployment",
+      "consigne": "Roll out to a fraction of traffic and promote on health.",
+      "exigences": [
+        "10% traffic to new version",
+        "Monitor error rate",
+        "Promote automatically"
+      ],
+      "domaines": [
+        "deploiement",
+        "kubernetes"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 20,
+      "titre": "Vault Integration",
+      "consigne": "Store and inject secrets with HashiCorp Vault.",
+      "exigences": [
+        "Store secrets in HashiCorp Vault.",
+        "Inject secrets into Pods securely."
+      ],
+      "domaines": [
+        "secrets",
+        "vault",
+        "securite"
+      ],
+      "pilier_suggere": "devsecops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 21,
+      "titre": "Terraform Module Registry",
+      "consigne": "Create and publish a reusable module.",
+      "exigences": [
+        "EC2",
+        "Security group",
+        "EBS",
+        "Publish internally."
+      ],
+      "domaines": [
+        "terraform",
+        "iac"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 22,
+      "titre": "Kubernetes Stateful Application",
+      "consigne": "Run a database on Kubernetes properly.",
+      "exigences": [
+        "MySQL StatefulSet",
+        "Persistent storage",
+        "Stable network identity",
+        "Backup mechanism"
+      ],
+      "domaines": [
+        "kubernetes",
+        "stateful",
+        "stockage"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 23,
+      "titre": "GitOps with ArgoCD",
+      "consigne": "Drive the cluster from git.",
+      "exigences": [
+        "Git repository for manifests",
+        "ArgoCD sync",
+        "Automatic rollback on drift"
+      ],
+      "domaines": [
+        "gitops",
+        "argocd",
+        "kubernetes"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 24,
+      "titre": "Auto-Rollback on Health Failure",
+      "consigne": "Roll back automatically when health checks fail.",
+      "exigences": [
+        "Kubernetes deployment",
+        "Health probe",
+        "Automatic rollback if failure"
+      ],
+      "domaines": [
+        "kubernetes",
+        "deploiement"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 25,
+      "titre": "Rate Limiting at Ingress",
+      "consigne": "Throttle abusive traffic at the edge.",
+      "exigences": [
+        "Request throttling",
+        "IP-based rate limits",
+        "Return HTTP 429"
+      ],
+      "domaines": [
+        "reseau",
+        "ingress"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 26,
+      "titre": "CI Pipeline Parallelization",
+      "consigne": "Make an existing pipeline measurably faster.",
+      "exigences": [
+        "Parallel test execution",
+        "Cache dependencies",
+        "Reduce runtime by 40%"
+      ],
+      "domaines": [
+        "ci-cd",
+        "performance"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null,
+      "remarque": "Recoupe partiellement l'article « De 9 a 2 minutes » : le cache et l'annulation y sont traites, la parallelisation des tests non."
+    },
+    {
+      "id": 27,
+      "titre": "Infrastructure Drift Detection",
+      "consigne": "Detect and report infrastructure drift automatically.",
+      "exigences": [
+        "Terraform plan automation",
+        "Scheduled drift detection",
+        "Slack alert on drift"
+      ],
+      "domaines": [
+        "terraform",
+        "iac",
+        "observabilite"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 28,
+      "titre": "Kubernetes Pod Security Standards",
+      "consigne": "Enforce the restricted pod security profile.",
+      "exigences": [
+        "Restricted policy",
+        "Prevent privileged containers",
+        "Block hostPath mounts"
+      ],
+      "domaines": [
+        "kubernetes",
+        "securite"
+      ],
+      "pilier_suggere": "devsecops",
+      "publie": false,
+      "article": null,
+      "remarque": "La liste d'exigences est peut-etre tronquee : la planche se termine sur le bord de l'image."
+    },
+    {
+      "id": 29,
+      "titre": "Rolling Restart with Zero Downtime",
+      "consigne": "Restart production without losing a request.",
+      "exigences": [
+        "Maintain 100% uptime",
+        "Monitor availability"
+      ],
+      "domaines": [
+        "kubernetes",
+        "deploiement"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 30,
+      "titre": "Automated Backup Strategy",
+      "consigne": "Automate backups and prove they restore.",
+      "exigences": [
+        "RDS snapshot",
+        "S3 versioning",
+        "Restore validation"
+      ],
+      "domaines": [
+        "aws",
+        "sauvegarde"
+      ],
+      "pilier_suggere": "cloud",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 31,
+      "titre": "Container Image Signing",
+      "consigne": "Sign images and refuse unsigned ones.",
+      "exigences": [
+        "Cosign signing",
+        "Verification before deployment"
+      ],
+      "domaines": [
+        "supply-chain",
+        "cosign",
+        "securite"
+      ],
+      "pilier_suggere": "devsecops",
+      "publie": true,
+      "article": "signer-images-cosign-admission-kyverno"
+    },
+    {
+      "id": 32,
+      "titre": "Infrastructure CI Validation",
+      "consigne": "Validate infrastructure code in CI.",
+      "exigences": [
+        "terraform validate",
+        "tflint",
+        "tfsec",
+        "Fail pipeline on issues"
+      ],
+      "domaines": [
+        "terraform",
+        "ci-cd",
+        "securite"
+      ],
+      "pilier_suggere": "devsecops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 33,
+      "titre": "Kubernetes Cluster Upgrade",
+      "consigne": "Upgrade the cluster without downtime.",
+      "exigences": [
+        "Minor version upgrade",
+        "Zero downtime",
+        "Rollback plan"
+      ],
+      "domaines": [
+        "kubernetes",
+        "exploitation"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 34,
+      "titre": "Centralized Secrets Strategy",
+      "consigne": "Compare secret stores and implement one.",
+      "exigences": [
+        "Kubernetes secrets",
+        "Vault",
+        "AWS Secrets Manager",
+        "Implement one securely."
+      ],
+      "domaines": [
+        "secrets",
+        "securite"
+      ],
+      "pilier_suggere": "devsecops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 35,
+      "titre": "Autoscaling Based on Custom Metrics",
+      "consigne": "Scale on business metrics, not just CPU.",
+      "exigences": [
+        "Requests per second",
+        "Prometheus metrics"
+      ],
+      "domaines": [
+        "kubernetes",
+        "scaling",
+        "observabilite"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 36,
+      "titre": "Multi-Region Deployment",
+      "consigne": "Serve an app from two regions with failover.",
+      "exigences": [
+        "Two regions",
+        "Route53 failover routing",
+        "Health checks"
+      ],
+      "domaines": [
+        "aws",
+        "ha",
+        "reseau"
+      ],
+      "pilier_suggere": "cloud",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 37,
+      "titre": "Blue/Green Infrastructure",
+      "consigne": "Duplicate the whole infrastructure, not just the app.",
+      "exigences": [
+        "Separate VPC per environment",
+        "DNS cutover",
+        "Rollback validation"
+      ],
+      "domaines": [
+        "aws",
+        "terraform",
+        "deploiement"
+      ],
+      "pilier_suggere": "cloud",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 38,
+      "titre": "Network Troubleshooting Scenario",
+      "consigne": "Diagnose an unreachable service methodically.",
+      "exigences": [
+        "Service unreachable",
+        "Debug using: kubectl logs",
+        "Debug using: describe",
+        "Debug using: tcpdump",
+        "Debug using: network policy check"
+      ],
+      "domaines": [
+        "kubernetes",
+        "reseau",
+        "diagnostic"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 39,
+      "titre": "Docker Image Optimization",
+      "consigne": "Shrink an image and explain how.",
+      "exigences": [
+        "Reduce image size by 60%.",
+        "Document optimization process."
+      ],
+      "domaines": [
+        "docker",
+        "performance"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 40,
+      "titre": "Kubernetes Resource Optimization",
+      "consigne": "Set limits that prevent OOM kills.",
+      "exigences": [
+        "CPU",
+        "Memory",
+        "Prevent OOMKilled pods."
+      ],
+      "domaines": [
+        "kubernetes",
+        "ressources"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 41,
+      "titre": "Audit Logging",
+      "consigne": "Turn on audit logs and use them.",
+      "exigences": [
+        "Kubernetes audit logs",
+        "Detect unauthorized access"
+      ],
+      "domaines": [
+        "kubernetes",
+        "audit",
+        "securite"
+      ],
+      "pilier_suggere": "devsecops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 42,
+      "titre": "Infrastructure Diagram & Documentation",
+      "consigne": "Document the system so someone else can run it.",
+      "exigences": [
+        "Architecture diagram",
+        "Network flow explanation",
+        "Security flow explanation"
+      ],
+      "domaines": [
+        "documentation",
+        "architecture"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 43,
+      "titre": "Chaos Engineering Test",
+      "consigne": "Inject failure and record how the system answers.",
+      "exigences": [
+        "Pod deletion",
+        "Node failure",
+        "Traffic spike",
+        "Document system response."
+      ],
+      "domaines": [
+        "chaos",
+        "resilience",
+        "kubernetes"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 44,
+      "titre": "CI/CD Secrets Management",
+      "consigne": "Keep secrets out of the pipeline's output.",
+      "exigences": [
+        "Being committed",
+        "Being logged",
+        "Being leaked"
+      ],
+      "domaines": [
+        "secrets",
+        "ci-cd",
+        "securite"
+      ],
+      "pilier_suggere": "devsecops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 45,
+      "titre": "Application Observability",
+      "consigne": "Instrument an application end to end.",
+      "exigences": [
+        "Distributed tracing",
+        "Prometheus metrics",
+        "Structured logs"
+      ],
+      "domaines": [
+        "observabilite",
+        "tracing"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 46,
+      "titre": "Custom Kubernetes Operator (Basic)",
+      "consigne": "Write an operator that reacts to a CRD.",
+      "exigences": [
+        "Watches CRD",
+        "Creates pods automatically"
+      ],
+      "domaines": [
+        "kubernetes",
+        "operateur",
+        "go"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 47,
+      "titre": "Infrastructure Performance Benchmark",
+      "consigne": "Measure before choosing an instance type.",
+      "exigences": [
+        "EC2 performance",
+        "Network latency",
+        "Disk IO",
+        "Compare instance types."
+      ],
+      "domaines": [
+        "aws",
+        "performance",
+        "mesure"
+      ],
+      "pilier_suggere": "cloud",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 48,
+      "titre": "Kubernetes Multi-Tenancy Model",
+      "consigne": "Host several teams on one cluster safely.",
+      "exigences": [
+        "Namespace isolation",
+        "Resource quotas",
+        "Network segmentation"
+      ],
+      "domaines": [
+        "kubernetes",
+        "multi-tenant",
+        "securite"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null,
+      "remarque": "La liste d'exigences est peut-etre tronquee : la planche se termine sur le bord de l'image."
+    },
+    {
+      "id": 49,
+      "titre": "DevSecOps Integration",
+      "consigne": "Put security scanning at every stage.",
+      "exigences": [
+        "SAST scan",
+        "Dependency scan",
+        "Container scan",
+        "Infrastructure scan"
+      ],
+      "domaines": [
+        "devsecops",
+        "ci-cd",
+        "securite"
+      ],
+      "pilier_suggere": "devsecops",
+      "publie": false,
+      "article": null
+    },
+    {
+      "id": 50,
+      "titre": "End-to-End Production-Grade Project",
+      "consigne": "Assemble everything into one production-ready system.",
+      "exigences": [
+        "Terraform infrastructure",
+        "Kubernetes cluster",
+        "CI/CD pipeline",
+        "Monitoring",
+        "Logging",
+        "Security",
+        "Auto scaling",
+        "GitOps",
+        "Disaster recovery plan",
+        "Document everything as production-ready solution."
+      ],
+      "domaines": [
+        "projet",
+        "synthese"
+      ],
+      "pilier_suggere": "devops",
+      "publie": false,
+      "article": null
+    }
+  ]
+}

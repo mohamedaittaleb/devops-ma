@@ -13,11 +13,11 @@ const comptes = Object.fromEntries(
   await Promise.all(PILIERS_LISTE.map(async (p) => [p.slug, (await articlesDuPilier(p.slug)).length])),
 );
 ---
-<Base titre={SITE.title} description={SITE.description}>
+<Base titre={SITE.titreAccueil} description={SITE.description}>
   <section class="trame">
     <div class="enveloppe intro">
       <p class="etiquette kicker">
-        <span class="pastille" aria-hidden="true"></span>Carnet technique · {SITE.langue.toUpperCase()}
+        <span class="pastille" aria-hidden="true"></span>Carnet technique · Maroc · {SITE.langue.toUpperCase()}
       </p>
       <h1>{SITE.baseline}</h1>
       <p class="chapeau">

@@ -8,13 +8,21 @@ import { lien, lienAbsolu } from '../lib/lien';
 interface Props {
   titre: string;
   description?: string;
-  type?: 'website' | 'article';
+  /** « profil » : la page A propos, declaree comme ProfilePage de l'auteur. */
+  type?: 'website' | 'article' | 'profil';
   canonique?: string;
   publieLe?: Date;
   majLe?: Date;
   motsCles?: readonly string[];
   filAriane?: { nom: string; chemin: string }[];
   noindex?: boolean;
+  /** Chemin interne d'une image de partage 1200x630 ; a defaut, celle du site. */
+  image?: string;
+  imageAlt?: string;
+  /** Rubrique de l'article (article:section, articleSection). */
+  rubrique?: string;
+  /** Nombre de mots de l'article (wordCount). */
+  mots?: number;
 }
 
 const {
@@ -27,10 +35,14 @@ const {
   motsCles,
   filAriane,
   noindex = false,
+  image = '/og.png',
+  imageAlt = `${SITE.title} — ${SITE.baseline}`,
+  rubrique,
+  mots,
 } = Astro.props;
 
 const titreComplet = titre === SITE.title ? titre : `${titre} — ${SITE.title}`;
-const ogImage = lienAbsolu('/og.png', Astro.site);
+const ogImage = lienAbsolu(image, Astro.site);
 
 /**
  * Les trois entites du site portent un @id stable et ne sont decrites qu'une
@@ -38,8 +50,12 @@ const ogImage = lienAbsolu('/og.png', Astro.site);
  * page repete la fiche auteur en entier, et un moteur n'a aucun moyen de
  * savoir que ces copies designent une seule et meme personne.
  */
-const ID_SITE = `${SITE.url}/#site`;
-const ID_AUTEUR = `${SITE.url}/#auteur`;
+// Construits sur Astro.site et non sur SITE.url : un @id doit vivre sur la
+// meme origine que le canonical, sans quoi le graphe designe un autre site.
+const racine = lienAbsolu('/', Astro.site);
+const ID_SITE = `${racine}#site`;
+const ID_AUTEUR = `${racine}#auteur`;
+const pageAuteur = lienAbsolu('/a-propos', Astro.site);
 
 // `sameAs` relie la personne a ses profils publics : c'est ce rattachement qui
 // fait passer l'auteur du statut de chaine de caracteres a celui d'entite
@@ -48,7 +64,9 @@ const auteur = {
   '@type': 'Person',
   '@id': ID_AUTEUR,
   name: SITE.auteur,
-  url: `${SITE.url}/`,
+  url: pageAuteur,
+  jobTitle: SITE.metier,
+  knowsAbout: SITE.sujets,
   sameAs: [SITE.linkedin, SITE.github],
 };
 
@@ -56,10 +74,17 @@ const siteWeb = {
   '@type': 'WebSite',
   '@id': ID_SITE,
   name: SITE.title,
-  url: `${SITE.url}/`,
+  url: racine,
   description: SITE.description,
   inLanguage: SITE.langue,
   publisher: { '@id': ID_AUTEUR },
+};
+
+const imageLd = {
+  '@type': 'ImageObject',
+  url: ogImage,
+  width: 1200,
+  height: 630,
 };
 
 const page = type === 'article'
@@ -71,9 +96,11 @@ const page = type === 'article'
       url: canonique,
       mainEntityOfPage: { '@id': canonique },
       isPartOf: { '@id': ID_SITE },
-      image: ogImage,
+      image: imageLd,
       inLanguage: SITE.langue,
       author: { '@id': ID_AUTEUR },
+      ...(rubrique ? { articleSection: rubrique } : {}),
+      ...(mots ? { wordCount: mots } : {}),
       publisher: { '@id': ID_AUTEUR },
       ...(publieLe ? { datePublished: publieLe.toISOString() } : {}),
       // Sans dateModified, une revision reste invisible : l'article continue
@@ -81,6 +108,19 @@ const page = type === 'article'
       // fait foi -- la repeter vaut mieux qu'omettre le champ.
       ...(majLe ?? publieLe ? { dateModified: (majLe ?? publieLe)!.toISOString() } : {}),
       ...(motsCles?.length ? { keywords: motsCles.join(', ') } : {}),
+    }
+  : type === 'profil'
+  ? {
+      // Google lit ProfilePage comme la page de reference d'une personne :
+      // c'est elle qui rattache les articles a un auteur identifie.
+      '@type': 'ProfilePage',
+      '@id': canonique,
+      name: titreComplet,
+      description,
+      url: canonique,
+      isPartOf: { '@id': ID_SITE },
+      inLanguage: SITE.langue,
+      mainEntity: { '@id': ID_AUTEUR },
     }
   : {
       '@type': 'WebPage',
@@ -131,17 +171,37 @@ const jsonLd = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{titreComplet}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonique} />
-    {noindex && <meta name="robots" content="noindex" />}
+    <!-- Une page exclue de l'index n'a pas a designer d'adresse de reference :
+         noindex et canonical ensemble envoient deux consignes contradictoires. -->
+    {noindex ? <meta name="robots" content="noindex, follow" /> : <link rel="canonical" href={canonique} />}
 
-    <meta property="og:type" content={type} />
+    <meta property="og:type" content={type === 'article' ? 'article' : type === 'profil' ? 'profile' : 'website'} />
     <meta property="og:title" content={titre} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonique} />
     <meta property="og:site_name" content={SITE.title} />
     <meta property="og:locale" content="fr_MA" />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="author" content={SITE.auteur} />
+    {type === 'article' && publieLe && (
+      <>
+        <meta property="article:published_time" content={publieLe.toISOString()} />
+        <meta property="article:modified_time" content={(majLe ?? publieLe).toISOString()} />
+        <meta property="article:author" content={pageAuteur} />
+        {rubrique && <meta property="article:section" content={rubrique} />}
+        {motsCles?.map((mot) => <meta property="article:tag" content={mot} />)}
+      </>
+    )}
+    {type === 'profil' && (
+      <>
+        <meta property="profile:first_name" content={SITE.auteur.split(' ')[0]} />
+        <meta property="profile:last_name" content={SITE.auteur.split(' ').slice(1).join(' ')} />
+      </>
+    )}
 
     <link rel="icon" href={lien("/favicon.svg")} type="image/svg+xml" />
     <link rel="alternate" type="application/rss+xml" title={SITE.title} href={lien("/rss.xml")} />

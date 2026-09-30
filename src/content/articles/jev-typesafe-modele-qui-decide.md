@@ -168,7 +168,7 @@ Jev tranche entre trois réponses : **autoriser**, **demander à un humain**, **
 projet [jev-guard](https://github.com/leepokai/jev-guard) applique ce principe aux actions
 de n'importe quel agent.
 
-J'ai écrit dans [le carnet sur le vocabulaire de l'IA](/articles/vocabulaire-ia-pour-devops)
+J'ai écrit dans [le carnet sur le vocabulaire de l'IA](/articles/vocabulaire-ia-pour-devops/)
 que la frontière de sécurité d'un agent est entièrement de notre côté, dans le code qui
 reçoit la demande d'outil et décide de l'exécuter. Un classifieur rapide placé à cet
 endroit est une bonne idée. **Un classifieur probabiliste utilisé comme seule barrière
@@ -369,7 +369,7 @@ n’est jamais la quantité à surveiller.
 
 Les réflexes restent les mêmes que pour n'importe quel service facturé à l'usage : un
 compteur par cas d'usage, un budget par environnement, une alerte sur la dérive. J'ai
-détaillé cette démarche dans [le coût réel d'un agent de revue de code](/articles/cout-reel-agent-revue-de-code).
+détaillé cette démarche dans [le coût réel d'un agent de revue de code](/articles/cout-reel-agent-revue-de-code/).
 
 ### C'est un produit de septembre 2026
 

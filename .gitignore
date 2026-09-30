@@ -10,6 +10,8 @@ dist/
 # Medias lourds : un fichier video pousse par megarde sur un depot public reste
 # atteignable par son empreinte de commit meme apres suppression.
 videos/
+instagrampics/
+ignorefolder/
 *.mp4
 *.mov
 *.webm

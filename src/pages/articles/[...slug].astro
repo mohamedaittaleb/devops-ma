@@ -6,7 +6,8 @@ import DateFr from '../../components/Date.astro';
 import Sponsor from '../../components/Sponsor.astro';
 import { SITE } from '../../consts';
 import {
-  tousLesArticles, minutesDeLecture, lienArticle, pilierDe, lienTag, type Article,
+  tousLesArticles, minutesDeLecture, lienArticle, pilierDe, lienTag, motsDe, articlesProches,
+  type Article,
 } from '../../lib/articles';
 import { lien } from '../../lib/lien';
 
@@ -32,6 +33,7 @@ const { article, plusAncien, plusRecent } = Astro.props;
 const { Content } = await render(article);
 const pilier = pilierDe(article);
 const minutes = minutesDeLecture(article);
+const proches = await articlesProches(article);
 
 // Reprend exactement le fil affiche plus bas : Accueil > Rubrique > Article.
 const filAriane = [
@@ -49,6 +51,10 @@ const filAriane = [
   motsCles={article.data.tags}
   filAriane={filAriane}
   noindex={article.data.brouillon}
+  image={`/og/${article.id}.png`}
+  imageAlt={`${article.data.titre} — ${pilier.nom}, devops.ma`}
+  rubrique={pilier.nom}
+  mots={motsDe(article)}
 >
   <!-- data-pagefind-body : seules les pages d'article entrent dans l'index.
        Sans lui, Pagefind indexe aussi l'accueil, les archives et les 12 pages de
@@ -98,6 +104,22 @@ const filAriane = [
         <a href={`mailto:${SITE.email}?subject=${encodeURIComponent(article.data.titre)}`}>Écrivez-moi</a> —
         les corrections sont intégrées et créditées.
       </p>
+
+      {proches.length > 0 && (
+        <nav class="proches" aria-labelledby="titre-proches">
+          <h2 id="titre-proches" class="etiquette">À lire ensuite</h2>
+          <ul>
+            {proches.map((a) => (
+              <li data-pilier={a.data.pilier}>
+                <a href={lienArticle(a)}>
+                  <span class="proche-titre">{a.data.titre}</span>
+                  <span class="proche-resume">{a.data.resume}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
 
       <nav class="voisins" aria-label="Autres articles">
         {plusAncien ? (
@@ -186,6 +208,22 @@ const filAriane = [
   }
   .tags a:hover { border-color: var(--accent); color: var(--accent); }
   .reaction { font-size: .93rem; color: var(--texte-doux); margin: 0 0 2.2rem; }
+
+  .proches { margin: 0 0 2.2rem; }
+  .proches h2 { margin: 0 0 .8rem; font-size: inherit; font-weight: inherit; }
+  .proches ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .proches a {
+    display: flex; flex-direction: column; gap: 4px;
+    padding: .85rem 1rem; text-decoration: none;
+    border: 1px solid var(--trait); border-left: 3px solid var(--accent); border-radius: 10px;
+    transition: border-color var(--transition), background var(--transition);
+  }
+  .proches a:hover { background: var(--fond-2); border-color: color-mix(in srgb, var(--accent) 50%, var(--trait)); }
+  .proche-titre { font-weight: 600; font-size: .98rem; line-height: 1.35; }
+  .proche-resume {
+    color: var(--texte-doux); font-size: .88rem; line-height: 1.5;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
 
   .voisins { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-top: 1.6rem; border-top: 1px solid var(--trait); }
   .voisin {

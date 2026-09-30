@@ -3,7 +3,7 @@ import type { GetStaticPaths } from 'astro';
 import Base from '../../layouts/Base.astro';
 import ListeArticles from '../../components/ListeArticles.astro';
 import EnteteDePage from '../../components/EnteteDePage.astro';
-import { tousLesArticles, tousLesTags, slugTag, type Article } from '../../lib/articles';
+import { tousLesArticles, tousLesTags, slugTag, TAGS_SEUIL_INDEX, type Article } from '../../lib/articles';
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const articles = await tousLesArticles();
@@ -15,10 +15,20 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 interface Props { tag: string; articles: Article[] }
 const { tag, articles } = Astro.props;
+
+// Une page de tag a un seul article ne fait que repeter son resume : pour un
+// moteur, c'est une copie mince de l'article, en concurrence avec lui. Elle
+// reste utile a la navigation, mais sort de l'index et du sitemap jusqu'a ce
+// qu'un deuxieme article la rejoigne. Meme seuil que src/pages/sitemap-0.xml.ts.
+const mince = articles.length < TAGS_SEUIL_INDEX;
+
+const titres = articles.slice(0, 3).map((a) => `« ${a.data.titre} »`).join(', ');
+const description = `${articles.length} article${articles.length > 1 ? 's' : ''} en français sur ${tag}, côté DevOps : ${titres}${articles.length > 3 ? '…' : '.'}`;
 ---
 <Base
-  titre={`Tag : ${tag}`}
-  description={`Articles de devops.ma associés au tag ${tag}.`}
+  titre={`${tag} : articles DevOps en français`}
+  description={description.length > 200 ? `${description.slice(0, 197)}…` : description}
+  noindex={mince}
 >
   <EnteteDePage
     kicker="Tag"
